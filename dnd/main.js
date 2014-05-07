@@ -9,15 +9,24 @@
         sidebarWidth = 240;
 
     var colNum = 3;
-    //初始化布局容器
-    $container.height(totalHeight);
     var container = {
         width: $container.width(),
         height: totalHeight
     };
-
     //列宽
     var itemWitdh = container.width / colNum;
+    //初始化布局容器
+    $container.height(totalHeight);
+    for (var i = 0; i < colNum; i++) {
+        var $item = $('<div class="drop-area"></div>').css({
+            width: itemWitdh
+        });
+        $container.append($item);
+    }
+    
+    
+
+    
     
     //取出各个组件
     var $components = $('.sidebar .components li');
@@ -38,10 +47,11 @@
         }
     });
     
-    $container.droppable({
+    $('.container .drop-area').droppable({
+        activeClass: 'ui-highlight',
         drop: function (e, ui) {
             var $dragClone = $(ui.draggable).find('.column').clone();
-            $container.append($dragClone.removeClass('none'));
+            $(e.target).append($dragClone.removeClass('none'));
         }
     })
 

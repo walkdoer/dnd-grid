@@ -26,7 +26,15 @@
 .view {
     background-color: #ff0;
 }
+.container .drop-area {
+  height: 150px;
+  float: left;
+  background: #F7F7F7;
+}
 
+.container .ui-highlight {
+  background-color: #ff0;
+}
 .column {
   height: 150px;
   border: 1px solid #666666;
