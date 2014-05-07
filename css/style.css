@@ -1,0 +1,22 @@
+.container{
+    background-color: #E8E8E8;
+    margin-left: 240px;
+}
+.sidebar{
+    position: fixed;
+    width: 200px;
+    background-color: #ededed;
+    border: 1px solid #dcdcdc;
+    padding: 10px;
+    margin: 10px;
+}
+.components {
+    list-style: none;
+}
+.components li{
+    background-color:#FFF;
+    text-align:center;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px;
+}
