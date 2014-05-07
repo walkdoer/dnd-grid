@@ -40,8 +40,8 @@
     
     $container.droppable({
         drop: function (e, ui) {
-            var dragClone = $(ui.helper).clone();
-            $container.append(dragClone);
+            var $dragClone = $(ui.draggable).find('.column').clone();
+            $container.append($dragClone.removeClass('none'));
         }
     })
 
