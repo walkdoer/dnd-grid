@@ -1,5 +1,5 @@
 .container{
-    background-color: #E8E8E8;
+    background-color: #ECECEC;
     margin-left: 240px;
 }
 .sidebar{
@@ -20,6 +20,6 @@
     border-radius: 5px;
     margin: 5px;
 }
-.components .view {
+.view {
     background-color: #ff0;
 }

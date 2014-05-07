@@ -37,5 +37,12 @@
             return $view;
         }
     });
+    
+    $container.droppable({
+        drop: function (e, ui) {
+            var dragClone = $(ui.helper).clone();
+            $container.append(dragClone);
+        }
+    })
 
 })(window);
