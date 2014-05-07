@@ -26,7 +26,7 @@
         helper: function () {
             var $com = $(this),
                 sizeArr = $com.data('size').split('x'),
-                $view = $('<div class="view"></div>'),
+                $view = $com.find('.column').clone().show(),
                 width = sizeArr[0],
                 height = sizeArr[1];
             console.log(width, height);
