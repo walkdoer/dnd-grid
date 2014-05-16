@@ -97,7 +97,7 @@
     };
     $('.drop-area').droppable({
         hoverClass: 'ui-highlight',
-        containment: '.container',
+        accept: '.com-drag',
         drop: function (e, ui) {
             var $dragClone = $(ui.draggable).find('.com').clone(),
                 $column = $(e.target);
