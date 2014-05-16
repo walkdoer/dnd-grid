@@ -19,10 +19,23 @@
             counter[prefix] = 1;
         }
         return [prefix, counter[prefix]++].join(spliter || '-');
+    }, getSize = function (cfgStr) {
+        var sizeArr = cfgStr.split('x'),
+            widthNum = parseInt(sizeArr[0], 10),
+            heightNum = parseInt(sizeArr[1], 10),
+            width = widthNum * itemWidth,
+            height = heightNum * itemWidth;
+        return {
+            width: width,
+            height: height
+        };
     };
     var margin = 2,
         borderWidth = 1,
-        itemWitdh = (container.width - (margin * colNum * 2 + borderWidth * colNum * 2 + 30))/ colNum;
+        itemWidth = (container.width - (margin * colNum * 2 + borderWidth * colNum * 2 + 30))/ colNum;
+        
+        
+
     /**------------------------
             1. 初始化布局容器
      --------------------------*/
@@ -31,7 +44,7 @@
     var $verticalContainer = $('<div class="clearfix">');
     for (var i = 0; i < colNum; i++) {
         var $item = $('<div class="drop-area vertical"></div>').css({
-            width: itemWitdh,
+            width: itemWidth,
             border: borderWidth + 'px solid #ccc',
             margin: margin
         });
@@ -54,26 +67,30 @@
         cursor: 'move',
         helper: function () {
             var $com = $(this),
-                sizeArr = $com.data('size').split('x'),
-                $view = $com.find('.column').clone().show(),
-                width = sizeArr[0],
-                height = sizeArr[1];
-            console.log(width, height);
-            $view.css({
-                width: itemWitdh * width,
-                height: 100
-            });
+                size = getSize($com.data('size')),
+                $view = $com.find('.com').clone().show();
+            $view.css(size);
             return $view;
         }
     });
-    
+    /**------------------------
+            2. 初始化DnD
+     --------------------------*/
+     
+    var dressUpElement = function ($dragClone, helper) {
+        $dragClone.css({
+            height: helper.height(),
+            width: helper.width()
+        });
+    };
     $('.drop-area').droppable({
         hoverClass: 'ui-highlight',
         containment: '.container',
         drop: function (e, ui) {
-            var $dragClone = $(ui.draggable).find('.column').clone(),
+            var $dragClone = $(ui.draggable).find('.com').clone(),
                 $column = $(e.target);
             $dragClone.append($column.children().length);
+            dressUpElement($dragClone, ui.helper);
             $column.append($dragClone.removeClass('none'));
         }
     });
