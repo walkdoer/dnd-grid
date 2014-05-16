@@ -27,7 +27,7 @@
     background-color: #ff0;
 }
 .container .drop-area {
-  background: #F7F7F7;
+  background: #F7F7F7; 
   border:1px solid #ccc;
   margin:2px;
   min-height: 150px;
@@ -103,5 +103,9 @@
 }
 
 .pie {
+	float:left;
+}
+
+.horizon .sortable-place-holder{
 	float:left;
 }

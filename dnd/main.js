@@ -43,7 +43,7 @@
     //初始化 Vertical容器
     var $verticalContainer = $('<div class="clearfix">');
     for (var i = 0; i < colNum; i++) {
-        var $item = $('<div class="drop-area vertical"></div>').css({
+        var $item = $('<div class="drop-area vertical clearfix"></div>').css({
             width: itemWidth,
             border: borderWidth + 'px solid #ccc',
             margin: margin
@@ -55,7 +55,7 @@
     $container.append($verticalContainer);
     //初始化 Horizon容器
     for (var i = 0; i < colNum; i++) {
-        var $item = $('<div class="drop-area horizon"></div>');
+        var $item = $('<div class="drop-area horizon clearfix"></div>');
         var id = idGen('dnd-drop-area');
         $item.attr('id', id);
         $container.append($item);
@@ -113,17 +113,21 @@
     });
     
     $('.drop-area.vertical').sortable({
-        connectWith: '.drop-area',
+        handle: 'header',
+        connectWith: '.drop-area.vertical',
         cursor: 'move',
-        containment: '.container',
         placeholder: 'sortable-place-holder',
+        opacity: 0.3,
         grid: [ 20, 10 ]
     });
     $('.drop-area.horizon').sortable({
         axis: 'x',
-        connectWith: '.drop-area',
+        handle: 'header',
+        forceHelperSize: true,
+		forcePlaceholderSize: true,
+        connectWith: '.drop-area.horizon',
         cursor: 'move',
-        containment: '.container',
+        opacity: 0.5,
         placeholder: 'sortable-place-holder',
         grid: [ 20, 10 ]
     });
