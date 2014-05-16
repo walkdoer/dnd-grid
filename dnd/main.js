@@ -21,7 +21,6 @@
         return [prefix, counter[prefix]++].join(spliter || '-');
     };
     var margin = 2,
-        dropAreaList = [],
         borderWidth = 1,
         itemWitdh = (container.width - (margin * colNum * 2 + borderWidth * colNum * 2))/ colNum;
     //初始化布局容器
@@ -34,7 +33,6 @@
         });
         var id = idGen('dnd-drop-area');
         $item.attr('id', id);
-        dropAreaList.push('#' + id);
         $container.append($item);
     }
     //取出各个组件
@@ -58,10 +56,19 @@
     
     $('.drop-area').droppable({
         hoverClass: 'ui-highlight',
+        containment: '.container',
         drop: function (e, ui) {
-            var $dragClone = $(ui.draggable).find('.column').clone();
-            $(e.target).append($dragClone.removeClass('none'));
+            var $dragClone = $(ui.draggable).find('.column').clone(),
+                $column = $(e.target);
+            $dragClone.append($column.children().length);
+            $column.append($dragClone.removeClass('none'));
         }
+    });
+    
+    $('.drop-area').sortable({
+        connectWith: '.drop-area',
+        containment: '.container',
+        grid: [ 20, 10 ]
     });
 
 })(window);

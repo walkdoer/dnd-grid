@@ -27,11 +27,11 @@
     background-color: #ff0;
 }
 .container .drop-area {
-  height: 150px;
   float: left;
   background: #F7F7F7;
   border:1px solid #ccc;
   margin:2px;
+  min-height: 150px;
 }
 
 .container .ui-highlight {
@@ -41,7 +41,7 @@
   height: 150px;
   border: 1px solid #666666;
   background-color: #ccc;
-  margin-right: 5px;
+  /* margin: 5px; */
   -webkit-border-radius: 10px;
   -ms-border-radius: 10px;
   -moz-border-radius: 10px;
