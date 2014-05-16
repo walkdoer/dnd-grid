@@ -30,6 +30,8 @@
   height: 150px;
   float: left;
   background: #F7F7F7;
+  border:1px solid #ccc;
+  margin:2px;
 }
 
 .container .ui-highlight {
