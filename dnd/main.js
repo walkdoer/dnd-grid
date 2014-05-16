@@ -39,6 +39,7 @@
     var $components = $('.sidebar .components li');
     $components.draggable({
         opacity: 0.35,
+        cursor: 'move',
         helper: function () {
             var $com = $(this),
                 sizeArr = $com.data('size').split('x'),
@@ -67,6 +68,7 @@
     
     $('.drop-area').sortable({
         connectWith: '.drop-area',
+        cursor: 'move',
         containment: '.container',
         placeholder: 'sortable-place-holder',
         grid: [ 20, 10 ]
