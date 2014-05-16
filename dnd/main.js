@@ -22,15 +22,27 @@
     };
     var margin = 2,
         borderWidth = 1,
-        itemWitdh = (container.width - (margin * colNum * 2 + borderWidth * colNum * 2))/ colNum;
-    //初始化布局容器
+        itemWitdh = (container.width - (margin * colNum * 2 + borderWidth * colNum * 2 + 30))/ colNum;
+    /**------------------------
+            1. 初始化布局容器
+     --------------------------*/
     $container.height(totalHeight);
+    //初始化 Vertical容器
+    var $verticalContainer = $('<div class="clearfix">');
     for (var i = 0; i < colNum; i++) {
-        var $item = $('<div class="drop-area"></div>').css({
+        var $item = $('<div class="drop-area vertical"></div>').css({
             width: itemWitdh,
             border: borderWidth + 'px solid #ccc',
             margin: margin
         });
+        var id = idGen('dnd-drop-area');
+        $item.attr('id', id);
+        $verticalContainer.append($item);
+    }
+    $container.append($verticalContainer);
+    //初始化 Horizon容器
+    for (var i = 0; i < colNum; i++) {
+        var $item = $('<div class="drop-area horizon"></div>');
         var id = idGen('dnd-drop-area');
         $item.attr('id', id);
         $container.append($item);

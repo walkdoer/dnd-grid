@@ -27,11 +27,13 @@
     background-color: #ff0;
 }
 .container .drop-area {
-  float: left;
   background: #F7F7F7;
   border:1px solid #ccc;
   margin:2px;
   min-height: 150px;
+}
+.container .vertical {
+	float: left;
 }
 
 .container .ui-highlight {
@@ -79,4 +81,12 @@
 	border: 1px dashed #666;
 	height: 150px;
 	margin: 5px;
+}
+
+.clearfix::before, .clearfix::after {
+	content: "";
+	display: table;
+}
+.clearfix::after {
+	clear: both;
 }
