@@ -90,3 +90,18 @@
 .clearfix::after {
 	clear: both;
 }
+.com-h-btn {
+	float: right;
+	border-radius: 20px;
+	border: 1px solid #fff;
+	display: block;
+	width: 20px;
+	height: 20px;
+	line-height: 20px;
+	margin-top: -3px;
+
+}
+
+.pie {
+	float:left;
+}

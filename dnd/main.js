@@ -21,8 +21,8 @@
         return [prefix, counter[prefix]++].join(spliter || '-');
     }, getSize = function (cfgStr) {
         var sizeArr = cfgStr.split('x'),
-            widthNum = parseInt(sizeArr[0], 10),
-            heightNum = parseInt(sizeArr[1], 10),
+            widthNum = parseFloat(sizeArr[0]),
+            heightNum = parseFloat(sizeArr[1]),
             width = widthNum * itemWidth,
             height = heightNum * itemWidth;
         return {
@@ -68,6 +68,7 @@
             $view = $(_.template(comTpl, {
                 title: $com.html()
             }));
+        
         $com.append($view);
     });
     $components.draggable({
@@ -85,11 +86,12 @@
             2. 初始化DnD
      --------------------------*/
      
-    var dressUpElement = function ($dragClone, helper) {
+    var dressUpElement = function ($dragClone, options) {
         $dragClone.css({
-            height: helper.height(),
-            width: helper.width()
+            height: options.height,
+            width: options.width
         });
+        $dragClone.addClass(options.cls);
     };
     $('.drop-area').droppable({
         hoverClass: 'ui-highlight',
@@ -98,12 +100,27 @@
             var $dragClone = $(ui.draggable).find('.com').clone(),
                 $column = $(e.target);
             $dragClone.append($column.children().length);
-            dressUpElement($dragClone, ui.helper);
+            $dragClone.on('click', '.close', function () {
+                $dragClone.remove();
+            });
+            dressUpElement($dragClone, {
+                width: ui.helper.width(),
+                height: ui.helper.height(),
+                cls: ui.draggable.data('type')
+            });
             $column.append($dragClone.removeClass('none'));
         }
     });
     
-    $('.drop-area').sortable({
+    $('.drop-area.vertical').sortable({
+        connectWith: '.drop-area',
+        cursor: 'move',
+        containment: '.container',
+        placeholder: 'sortable-place-holder',
+        grid: [ 20, 10 ]
+    });
+    $('.drop-area.horizon').sortable({
+        axis: 'x',
         connectWith: '.drop-area',
         cursor: 'move',
         containment: '.container',
