@@ -41,7 +41,7 @@
      --------------------------*/
     $container.height(totalHeight);
     //初始化 Vertical容器
-    var $verticalContainer = $('<div class="clearfix">');
+    var $verticalContainer = $('<div class="vertical-container clearfix">');
     for (var i = 0; i < colNum; i++) {
         var $item = $('<div class="drop-area vertical clearfix"></div>').css({
             width: itemWidth,
@@ -54,12 +54,14 @@
     }
     $container.append($verticalContainer);
     //初始化 Horizon容器
+    var $horizonContainer = $('<div class="horizon-container clearfix">');
     for (var i = 0; i < colNum; i++) {
         var $item = $('<div class="drop-area horizon clearfix"></div>');
         var id = idGen('dnd-drop-area');
         $item.attr('id', id);
-        $container.append($item);
+        $horizonContainer.append($item);
     }
+    $container.append($horizonContainer);
     //取出各个组件
     var $components = $('.sidebar .components li'),
         comTpl = $('#tpl-com').html();
@@ -116,19 +118,25 @@
         handle: 'header',
         connectWith: '.drop-area.vertical',
         cursor: 'move',
+        containment: 'parent',
         placeholder: 'sortable-place-holder',
         opacity: 0.3,
-        grid: [ 20, 10 ]
     });
     $('.drop-area.horizon').sortable({
         axis: 'x',
         handle: 'header',
+        containment: 'parent',
         forceHelperSize: true,
 		forcePlaceholderSize: true,
         cursor: 'move',
         opacity: 0.5,
         placeholder: 'sortable-place-holder',
-        grid: [ 20, 10 ]
+    });
+    $('.horizon-container').sortable({
+        cursor: 'move',
+        containment: 'parent',
+        placeholder: 'sortable-place-holder',
+        opacity: 0.3,
     });
 
 })(window);
