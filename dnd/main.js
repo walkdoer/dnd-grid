@@ -68,6 +68,7 @@
     $('.drop-area').sortable({
         connectWith: '.drop-area',
         containment: '.container',
+        placeholder: 'sortable-place-holder',
         grid: [ 20, 10 ]
     });
 
