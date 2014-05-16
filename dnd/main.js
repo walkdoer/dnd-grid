@@ -125,7 +125,6 @@
         handle: 'header',
         forceHelperSize: true,
 		forcePlaceholderSize: true,
-        connectWith: '.drop-area.horizon',
         cursor: 'move',
         opacity: 0.5,
         placeholder: 'sortable-place-holder',
