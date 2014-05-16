@@ -61,7 +61,15 @@
         $container.append($item);
     }
     //取出各个组件
-    var $components = $('.sidebar .components li');
+    var $components = $('.sidebar .components li'),
+        comTpl = $('#tpl-com').html();
+    $components.each(function (index, com) {
+        var $com = $(com),
+            $view = $(_.template(comTpl, {
+                title: $com.html()
+            }));
+        $com.append($view);
+    });
     $components.draggable({
         opacity: 0.35,
         cursor: 'move',

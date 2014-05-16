@@ -14,12 +14,17 @@
 <body>
     <div class="sidebar">
         <ul class="components">
-            <li data-size="1x1">饼图<div class="com none"><header>饼图</header></div></li>
-            <li data-size="2x1.5">趋势<div class="com none"><header>趋势</header></div></li>
-            <li data-size="3x2">报表<div class="com none"><header>报表</header></div></li>
+            <li data-size="1x1">饼图</li>
+            <li data-size="2x1.5">趋势</li>
+            <li data-size="3x2">报表</li>
         </ul>
     </div>
     <div class="container"></div>
+    <script id="tpl-com" type="text/template">
+        <div class="com none">
+            <header><%= title %></header>
+        </div>
+    </script>
     <script src="./dnd/main.js" type="text/javascript" charset="utf-8"></script>
 </body>
 
