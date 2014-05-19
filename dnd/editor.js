@@ -18,11 +18,13 @@
      */
     var Editor = Backbone.View.extend({
         initialize: function (options) {
+            this.$el.addClass(options.className);
             this.width = options.width;
             this.colNum = options.colNum || COLNUM;
             this.components = options.components;
             this.opacity = options.opacity || OPACITY;
             this.leftSpace = {};
+            this.counter = {};
         },
 
 
@@ -33,24 +35,29 @@
             this._renderSideBar();
             this._renderWorkSpace();
             this._initDnd();
+            return this;
         },
 
+        show: function () {
+            this.$el.show();            
+        },
+        
 
         /**
          * 渲染侧边工具栏
          */
         _renderSideBar: function () {
-            var $sidebar = this.$sidebar;
-            //添加SideBar
-            $sidebar = $('<div class="sidebar">');
-            this.$el.append(this.$sidebar);
+            var sidebarTpl = $('#tpl-sidebar').html(),
+                $sidebar = $(_.template(sidebarTpl, {}));
 
+            this.$el.append((this.$sidebar = $sidebar));
+            var $comsContainer = $sidebar.find('.components');
             //取出各个组件
             var components = this.components,
                 comTpl = $('#tpl-com').html();
-            components.each(function (index, com) {
+            _.each(components, function (com) {
                 var $com = $(_.template(comTpl, com));
-                $sidebar.append($com);
+                $comsContainer.append($com);
             });
         },
 
@@ -78,14 +85,14 @@
         },
 
         _initDnd: function () {
-            var that = this,
+            var editor = this,
                 leftSpace = this.leftSpace;
             this.$sidebar.find('.com-drag').draggable({
                 opacity: this.opacity,
                 cursor: 'move',
                 helper: function () {
                     var $com = $(this),
-                        size = that.getSize($com.data('size')),
+                        size = editor.getSize($com.data('size')),
                         $view = $com.find('.com').clone().show();
                     $view.css(size);
                     return $view;
@@ -101,7 +108,7 @@
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
-                    var sizeCfg = that.getSizeCfg(draggable.attr('data-size')),
+                    var sizeCfg = editor.getSizeCfg(draggable.attr('data-size')),
                         needSpace;
                     if (sizeCfg) {
                         needSpace = sizeCfg.width;
@@ -121,9 +128,9 @@
                     });
 
                     var sizeCfgStr = ui.draggable.attr('data-size'),
-                        widthSpace = that.getSizeCfg(sizeCfgStr).width,
-                        size = that.getSize(sizeCfgStr),
-                        widthPercentage = that.getWidthPercentage(sizeCfgStr);
+                        widthSpace = editor.getSizeCfg(sizeCfgStr).width,
+                        size = editor.getSize(sizeCfgStr),
+                        widthPercentage = editor.getWidthPercentage(sizeCfgStr);
                     dressUpElement($dragClone, {
                         width: widthPercentage * 100 + '%',
                         height: size.height,

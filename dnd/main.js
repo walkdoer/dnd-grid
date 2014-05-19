@@ -3,6 +3,7 @@
 
     var Editor = window.DnDEditor,
         editor = new Editor({
+            className: 'editor',
             width: 700,
             components: [
                 {type: 'pie', size: '1*0.7', title: '饼图'},
@@ -11,5 +12,10 @@
             ]
         });
 
-    $('body').append(editor.$el);
+    $('body').append(editor.render().$el.hide());
+    
+    
+    $('.toolbar').on('click', '.open-editor', function () {
+        editor.show();
+    });
 })(window);

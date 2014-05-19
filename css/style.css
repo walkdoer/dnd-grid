@@ -1,7 +1,10 @@
 /** Global **/
 .none {display: none;}
 
-.editor .container{
+
+.toolbar ul li {margin: 5px; background-color: #F1F1F1; border: 1px solid #DAD8D8; display:inline-block;padding: 10px;border-radius: 4px;}
+
+.editor .workspace{
     background-color: #ECECEC;
     margin-left: 240px;
 }
@@ -26,7 +29,7 @@
 .view {
     background-color: #ff0;
 }
-.container .drop-area {
+.workspace .drop-area {
   background: #F7F7F7; 
   border:1px solid #ccc;
   margin:2px;
@@ -34,11 +37,11 @@
   min-height: 150px;
   box-sizing: border-box;
 }
-.container .vertical {
+.workspace .vertical {
 	float: left;
 }
 
-.container .ui-highlight {
+.workspace .ui-highlight {
   background-color: #ff0;
 }
 .com {
