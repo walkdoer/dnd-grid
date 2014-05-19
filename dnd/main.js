@@ -8,8 +8,11 @@
         $container = $('.container'),
         counter = {},
         sidebarWidth = 240;
-
-    var colNum = 3;
+    /**----------------
+        Global Config
+    ------------------*/
+    var colNum = 3,
+        OPACITY = 0.35;
     var container = {
         width: $container.width(),
         height: totalHeight
@@ -90,7 +93,7 @@
         $com.append($view);
     });
     $components.draggable({
-        opacity: 0.35,
+        opacity: OPACITY,
         cursor: 'move',
         helper: function () {
             var $com = $(this),
@@ -124,11 +127,13 @@
             return draggable.hasClass('com-drag') && leftSpace[this.id] >= needSpace;
         },
         drop: function (e, ui) {
-            var $dragClone = $(ui.draggable).find('.com').clone(),
+            var that = this,
+                $dragClone = $(ui.draggable).find('.com').clone(),
                 $column = $(e.target);
             $dragClone.append($column.children().length);
             $dragClone.on('click', '.close', function () {
                 $dragClone.remove();
+                leftSpace[that.id]+= widthSpace;
             });
             
             var sizeCfgStr = ui.draggable.attr('data-size'),
@@ -160,14 +165,14 @@
         forceHelperSize: true,
 		forcePlaceholderSize: true,
         cursor: 'move',
-        opacity: 0.5,
-        placeholder: 'sortable-place-holder',
+        opacity: OPACITY,
+        placeholder: 'sortable-place-holder'
     });
     $('.horizon-container').sortable({
         cursor: 'move',
         //containment: 'parent',
         placeholder: 'sortable-place-holder',
-        opacity: 0.3,
+        opacity: OPACITY
     });
 
 })(window);
