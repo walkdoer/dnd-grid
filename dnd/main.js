@@ -29,10 +29,16 @@
             width: width,
             height: height
         };
+    }, getWidthPercentage = function (cfgStr) {
+        var sizeArr = cfgStr.split('x'),
+            part = 1/colNum,
+            widthNum = parseFloat(sizeArr[0]);
+        return part * widthNum;
     };
-    var margin = 2,
-        borderWidth = 1,
-        itemWidth = (container.width - (margin * colNum * 2 + borderWidth * colNum * 2 + 30))/ colNum;
+    var padding = 10,
+        //拖拽元素的邊框寬度
+        dragObjBorderWidth = 1,
+        itemWidth = (container.width + padding * 2)/ colNum;
         
         
 
@@ -41,18 +47,18 @@
      --------------------------*/
     $container.height(totalHeight);
     //初始化 Vertical容器
-    var $verticalContainer = $('<div class="vertical-container clearfix">');
-    for (var i = 0; i < colNum; i++) {
-        var $item = $('<div class="drop-area vertical clearfix"></div>').css({
-            width: itemWidth,
-            border: borderWidth + 'px solid #ccc',
-            margin: margin
-        });
-        var id = idGen('dnd-drop-area');
-        $item.attr('id', id);
-        $verticalContainer.append($item);
-    }
-    $container.append($verticalContainer);
+//     var $verticalContainer = $('<div class="vertical-container clearfix">');
+//     for (var i = 0; i < colNum; i++) {
+//         var $item = $('<div class="drop-area vertical clearfix"></div>').css({
+//             width: itemWidth,
+//             border: borderWidth + 'px solid #ccc',
+//             margin: margin
+//         });
+//         var id = idGen('dnd-drop-area');
+//         $item.attr('id', id);
+//         $verticalContainer.append($item);
+//     }
+//     $container.append($verticalContainer);
     //初始化 Horizon容器
     var $horizonContainer = $('<div class="horizon-container clearfix">');
     for (var i = 0; i < colNum; i++) {
@@ -105,27 +111,30 @@
             $dragClone.on('click', '.close', function () {
                 $dragClone.remove();
             });
+            var sizeCfg = ui.draggable.attr('data-size'),
+                size = getSize(sizeCfg),
+                widthPercentage = getWidthPercentage(sizeCfg);
             dressUpElement($dragClone, {
-                width: ui.helper.width(),
-                height: ui.helper.height(),
+                width: widthPercentage * 100 + '%',
+                height: size.height,
                 cls: ui.draggable.data('type')
             });
             $column.append($dragClone.removeClass('none'));
         }
     });
     
-    $('.drop-area.vertical').sortable({
-        handle: 'header',
-        connectWith: '.drop-area.vertical',
-        cursor: 'move',
-        containment: 'parent',
-        placeholder: 'sortable-place-holder',
-        opacity: 0.3,
-    });
+//     $('.drop-area.vertical').sortable({
+//         handle: 'header',
+//         connectWith: '.drop-area.vertical',
+//         cursor: 'move',
+//         //containment: 'parent',
+//         placeholder: 'sortable-place-holder',
+//         opacity: 0.3,
+//     });
     $('.drop-area.horizon').sortable({
         axis: 'x',
         handle: 'header',
-        containment: 'parent',
+        //containment: 'parent',
         forceHelperSize: true,
 		forcePlaceholderSize: true,
         cursor: 'move',
@@ -134,7 +143,7 @@
     });
     $('.horizon-container').sortable({
         cursor: 'move',
-        containment: 'parent',
+        //containment: 'parent',
         placeholder: 'sortable-place-holder',
         opacity: 0.3,
     });
