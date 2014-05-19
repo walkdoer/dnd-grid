@@ -21,6 +21,7 @@
             this.$el.addClass(options.className);
             this.width = options.width;
             this.colNum = options.colNum || COLNUM;
+            this.itemWidth = this.width / this.colNum;
             this.components = options.components;
             this.opacity = options.opacity || OPACITY;
             this.leftSpace = {};
@@ -166,7 +167,7 @@
         getSizeCfg: function (cfgStr) {
             var cfg = null;
             if (cfgStr) {
-                var arr = cfgStr.split('x');
+                var arr = cfgStr.split('*');
                 cfg = {
                     width: parseFloat(arr[0]) || 0,
                     height: parseFloat(arr[1]) || 0
