@@ -6,8 +6,8 @@
             className: 'editor',
             width: 700,
             components: [
-                {type: 'pie', size: '1*0.7', title: '饼图'},
-                {type: 'trend', size: '2*1.2', title: '趋势'},
+                {type: 'pie', size: '1*1', title: '饼图'},
+                {type: 'trend', size: '2*1', title: '趋势'},
                 {type: 'report', size: '3*1.5', title: '报表'},
             ]
         });
