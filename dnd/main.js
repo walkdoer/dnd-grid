@@ -114,7 +114,13 @@
     $('.drop-area').droppable({
         hoverClass: 'ui-highlight',
         accept: function (draggable) {
-            var needSpace = getSizeCfg(draggable.attr('data-size')).width;
+            var sizeCfg = getSizeCfg(draggable.attr('data-size')),
+                needSpace;
+            if (sizeCfg) {
+                needSpace = sizeCfg.width;
+            } else {
+                return false;
+            }
             return draggable.hasClass('com-drag') && leftSpace[this.id] >= needSpace;
         },
         drop: function (e, ui) {
