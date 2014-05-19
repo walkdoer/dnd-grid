@@ -19,21 +19,30 @@
             counter[prefix] = 1;
         }
         return [prefix, counter[prefix]++].join(spliter || '-');
-    }, getSize = function (cfgStr) {
-        var sizeArr = cfgStr.split('x'),
-            widthNum = parseFloat(sizeArr[0]),
-            heightNum = parseFloat(sizeArr[1]),
-            width = widthNum * itemWidth,
-            height = heightNum * itemWidth;
+    },
+    getSizeCfg = function (cfgStr) {
+        var cfg = null;
+        if (cfgStr) {
+            var arr = cfgStr.split('x');
+            cfg = {
+                width: parseFloat(arr[0]) || 0,
+                height: parseFloat(arr[1]) || 0
+            };
+        }
+        return cfg;
+    },
+    getSize = function (cfgStr) {
+        var sizeCfg = getSizeCfg(cfgStr),
+            width = sizeCfg.width * itemWidth,
+            height = sizeCfg.height * itemWidth;
         return {
             width: width,
             height: height
         };
     }, getWidthPercentage = function (cfgStr) {
-        var sizeArr = cfgStr.split('x'),
-            part = 1/colNum,
-            widthNum = parseFloat(sizeArr[0]);
-        return part * widthNum;
+        var sizeCfg = getSizeCfg(cfgStr),
+            part = 1/colNum;
+        return part * sizeCfg.width;
     };
     var padding = 10,
         //拖拽元素的邊框寬度
@@ -41,7 +50,7 @@
         itemWidth = (container.width + padding * 2)/ colNum;
         
         
-
+    var leftSpace = {};
     /**------------------------
             1. 初始化布局容器
      --------------------------*/
@@ -65,6 +74,7 @@
         var $item = $('<div class="drop-area horizon clearfix"></div>');
         var id = idGen('dnd-drop-area');
         $item.attr('id', id);
+        leftSpace[id] = colNum;
         $horizonContainer.append($item);
     }
     $container.append($horizonContainer);
@@ -103,7 +113,10 @@
     };
     $('.drop-area').droppable({
         hoverClass: 'ui-highlight',
-        accept: '.com-drag',
+        accept: function (draggable) {
+            var needSpace = getSizeCfg(draggable.attr('data-size')).width;
+            return draggable.hasClass('com-drag') && leftSpace[this.id] >= needSpace;
+        },
         drop: function (e, ui) {
             var $dragClone = $(ui.draggable).find('.com').clone(),
                 $column = $(e.target);
@@ -111,14 +124,17 @@
             $dragClone.on('click', '.close', function () {
                 $dragClone.remove();
             });
-            var sizeCfg = ui.draggable.attr('data-size'),
-                size = getSize(sizeCfg),
-                widthPercentage = getWidthPercentage(sizeCfg);
+            
+            var sizeCfgStr = ui.draggable.attr('data-size'),
+                widthSpace = getSizeCfg(sizeCfgStr).width,
+                size = getSize(sizeCfgStr),
+                widthPercentage = getWidthPercentage(sizeCfgStr);
             dressUpElement($dragClone, {
                 width: widthPercentage * 100 + '%',
                 height: size.height,
                 cls: ui.draggable.data('type')
             });
+            leftSpace[this.id] -= widthSpace;
             $column.append($dragClone.removeClass('none'));
         }
     });
