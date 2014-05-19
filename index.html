@@ -14,21 +14,21 @@
 
 <body>
     <div class="container"></div>
-    <div class="editor">
+
+    <script id="tpl-sidebar" type="text/template">
         <div class="sidebar none">
-            <ul class="components">
-                <li class="com-drag" data-size="1x0.7" data-type="pie">饼图</li>
-                <li class="com-drag" data-size="2x1.2" data-type="trend">趋势</li>
-                <li class="com-drag" data-size="3x1.5" data-type="report">报表</li>
-            </ul>
-        </div>
-        <div class="container none"></div>
-    </div>
-    <script id="tpl-com" type="text/template">
-        <div class="com none">
-            <header><%= title %><span class="com-h-btn close">X</span></header>
+            <ul class="components"></ul>
         </div>
     </script>
+    <script id="tpl-com" type="text/template">
+        <li class="com-drag" data-size="<%=size%>" data-type="<%=type%>">
+            <%=title%>
+            <div class="com none">
+                <header><%= title %><span class="com-h-btn close">X</span></header>
+            </div>
+        </li>
+    </script>
+    <script src="./dnd/editor.js" type="text/javascript" charset="utf-8"></script>
     <script src="./dnd/main.js" type="text/javascript" charset="utf-8"></script>
 </body>
 
