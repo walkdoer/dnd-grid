@@ -89,16 +89,33 @@
         _initDnd: function () {
             var editor = this,
                 leftSpace = this.leftSpace;
+            this.$workspace.find('.drop-area.horizon').sortable({
+                axis: 'x',
+                handle: 'header',
+                forceHelperSize: true,
+                forcePlaceholderSize: true,
+                cursor: 'move',
+                opacity: OPACITY,
+                placeholder: 'sortable-place-holder'
+            });
+            this.$workspace.find('.horizon-container').sortable({
+                cursor: 'move',
+                //containment: 'parent',
+                placeholder: 'sortable-place-holder',
+                opacity: OPACITY
+            });
             this.$sidebar.find('.com-drag').draggable({
                 opacity: this.opacity,
                 cursor: 'move',
-                helper: function () {
+                connectToSortable: ".drop-area.horizon",
+                helper: 'clone'
+                /*helper: function () {
                     var $com = $(this),
                         size = editor.getSize($com.data('size')),
                         $view = $com.find('.com').clone().show();
                     $view.css(size);
                     return $view;
-                }
+                }*/
             });
             var dressUpElement = function ($dragClone, options) {
                 $dragClone.css({
@@ -107,6 +124,7 @@
                 });
                 $dragClone.addClass(options.cls);
             };
+            /*
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
@@ -141,22 +159,7 @@
                     leftSpace[this.id] -= widthSpace;
                     $column.append($dragClone.removeClass('none'));
                 }
-            });
-            this.$workspace.find('.drop-area.horizon').sortable({
-                axis: 'x',
-                handle: 'header',
-                forceHelperSize: true,
-                forcePlaceholderSize: true,
-                cursor: 'move',
-                opacity: OPACITY,
-                placeholder: 'sortable-place-holder'
-            });
-            this.$workspace.find('.horizon-container').sortable({
-                cursor: 'move',
-                //containment: 'parent',
-                placeholder: 'sortable-place-holder',
-                opacity: OPACITY
-            });
+            });*/
         },
         idGen: function (prefix, spliter) {
             var counter = this.counter;
