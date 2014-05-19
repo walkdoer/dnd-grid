@@ -1,11 +1,11 @@
 /** Global **/
 .none {display: none;}
 
-.container{
+.editor .container{
     background-color: #ECECEC;
     margin-left: 240px;
 }
-.sidebar{
+.editor .sidebar{
     position: fixed;
     width: 200px;
     background-color: #ededed;

@@ -7,18 +7,17 @@
         totalHeight = dEl.clientHeight,
         $container = $('.editor .container'),
         counter = {},
-        sidebarWidth = 240;
-        
-        
-    /**----------------
-        Global Config
-    ------------------*/
-    var colNum = 3,
+        /**----------------
+            Global Config
+        ------------------*/
+        COLNUM = 3,
         OPACITY = 0.35;
-    var container = {
-        width: $container.width(),
-        height: totalHeight
-    };
+        SIDE_BAR_WIDTH = 240;
+
+
+    /**-------------
+        内部使用到的函数
+     -----------------*/
     var idGen = function (prefix, spliter) {
         if (!counter[prefix]) {
             counter[prefix] = 1;
@@ -49,6 +48,44 @@
             part = 1/colNum;
         return part * sizeCfg.width;
     };
+
+
+    /**
+     * 界面编辑器
+     */
+    var Editor = Backbone.View.extend({
+        initialize: function (options) {
+            this.width = options.width;
+            this.colNum = options.colNum || COLNUM;
+            this.opacity = options.opacity || OPACITY;
+            this.leftSpace = {};
+        },
+        render: function () {
+            
+        },
+        
+
+        /**
+         * 渲染侧边工具栏
+         */
+        _renderSideBar: function () {
+            
+        },
+
+
+        /**
+         * 渲染工作臺
+         */
+        _renderWorkSpace: function () {
+            
+        }
+    });    
+   
+    var container = {
+        width: $container.width(),
+        height: totalHeight
+    };
+    
     var padding = 10,
         //拖拽元素的邊框寬度
         dragObjBorderWidth = 1,
