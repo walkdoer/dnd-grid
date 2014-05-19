@@ -1,16 +1,34 @@
 /** Global **/
 .none {display: none;}
 
-
 .toolbar ul li {margin: 5px; background-color: #F1F1F1; border: 1px solid #DAD8D8; display:inline-block;padding: 10px;border-radius: 4px;}
 
 .editor .workspace{
-    background-color: #ECECEC;
+    background-color: #F7F7F7;
+    border: 1px solid #dedede;
     margin-left: 240px;
+	padding: 30px;
+    box-sizing: border-box;
+    position: relative;
+}
+
+.editor .workspace:after{
+	background-color: #F5F5F5;
+	border: 1px solid #DDDDDD;
+	border-radius: 4px 0 4px 0;
+	color: #9DA0A4;
+	content: "Container";
+	font-size: 12px;
+	font-weight: bold;
+	left: -1px;
+	padding: 3px 7px;
+	position: absolute;
+	top: -1px;
 }
 .editor .sidebar{
-    position: fixed;
+    /* position: fixed; */
     width: 200px;
+    float: left;
     background-color: #ededed;
     border: 1px solid #dcdcdc;
     padding: 10px;
@@ -36,6 +54,7 @@
   /* padding: 20px; */
   min-height: 150px;
   box-sizing: border-box;
+  box-shadow: inset 0 1px 13px rgba(0, 0, 0, 0.1);
 }
 .workspace .vertical {
 	float: left;
@@ -48,6 +67,7 @@
   height: 150px;
   /* border: 1px solid #666666; */
   background-color: #ccc;
+  z-index: 9999;
   /* margin: 5px; */
   -webkit-border-radius: 10px;
   -ms-border-radius: 10px;
