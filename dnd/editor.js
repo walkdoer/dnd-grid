@@ -108,6 +108,8 @@
                     width: options.width
                 });
                 $dragClone.addClass(options.cls);
+                $dragClone.attr('id', options.id)
+                          .attr('data-width', options.width);
             };
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
@@ -131,14 +133,17 @@
                         leftSpace[that.id]+= widthSpace;
                     });
 
-                    var sizeCfgStr = ui.draggable.attr('data-size'),
+                    var draggable = ui.draggable,
+                        sizeCfgStr = draggable.attr('data-size'),
                         widthSpace = editor.getSizeCfg(sizeCfgStr).width,
+                        type = draggable.data('type'),
                         size = editor.getSize(sizeCfgStr),
                         widthPercentage = editor.getWidthPercentage(sizeCfgStr);
                     dressUpElement($dragClone, {
                         width: widthPercentage * 100 + '%',
                         height: size.height,
-                        cls: ui.draggable.data('type')
+                        cls: type,
+                        id: editor.idGen(type)
                     });
                     leftSpace[this.id] -= widthSpace;
                     $column.append($dragClone.removeClass('none'));
@@ -168,26 +173,26 @@
          */
         getData: function () {
             var result = {},
-                getCfgFromSortable = function (sectionArr) {
-                    var data = [];
+                getCfgFromSortable = function ($sortable) {
+                    var data = [],
+                        sectionArr = $sortable.sortable('toArray');
                     _.each(sectionArr, function (section) {
                         var $section = $(id(section)),
+                            sectionCfg = { id: section},
                             itemOrderArr;
-                        if (!$section.hasClass('ui-sortable')) {
-                            return;
+                        if ($section.hasClass('ui-sortable')) {
+                            sectionCfg.type = 'cont';
+                            sectionCfg.children = getCfgFromSortable($section);
+                        } else {
+                            sectionCfg.type = 'item';
                         }
-                        itemOrderArr = $section.sortable('toArray');
-                        data.push({
-                            id: section,
-                            cfg: {},
-                            children: getCfgFromSortable(itemOrderArr)
-                        });
+                        sectionCfg.width = $section.data('width');
+                        data.push(sectionCfg);
                     });
                     return data;
-                },
-                sectionOrderArr = $('.horizon-container').sortable('toArray');
-
-            result.children = getCfgFromSortable(sectionOrderArr);
+                };
+            result.type = 'cont';
+            result.children = getCfgFromSortable($('.horizon-container'));
             return result;
         },
 

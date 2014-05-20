@@ -2,6 +2,7 @@
     'use strict';
 
     var Editor = window.DnDEditor,
+        STORAGE_KEY = 'view-data',
         editor = new Editor({
             className: 'editor',
             width: 700,
@@ -12,7 +13,7 @@
             ]
         });
 
-    $('body').append(editor.render().$el.hide());
+    var $body = $('body').append(editor.render().$el.hide());
     
     
     $('.toolbar').on('click', '.open-editor', function () {
@@ -21,6 +22,40 @@
     
     $('.toolbar').on('click', '.save', function () {
         var data = editor.getData();
-        localStorage.setItem('view-data', JSON.stringify(data));
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
     });
+    
+    function getConfig () {
+        var cfg = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        return cfg;
+    }
+    
+    var template = $('#tpl-com-r').html();
+    
+    function renderFromConfig(config) {
+        var $div,
+            $parent;
+        if (config.type === 'item') {
+            $div = $(_.template(template, {
+                title: config.title
+            }));
+        } else {
+            $div = $('<div>');
+        }
+        $parent = $div;
+        if (config.class) {
+            $div.addClass(config.class);
+        }
+        if (config.id) {
+            $div.attr('id', config.id);
+        }
+        var children = config.children;
+        if (children && children.length > 0) {
+            _.each(children, function (child) {
+                $parent.append(renderFromConfig(child));
+            });
+        }
+        return $div;
+    }
+    $body.append(renderFromConfig(getConfig()));
 })(window);
