@@ -37,7 +37,8 @@
             $parent;
         if (config.type === 'item') {
             $div = $(_.template(template, {
-                title: config.title
+                title: config.title,
+                className: config.className
             }));
         } else {
             $div = $('<div>');
@@ -48,6 +49,9 @@
         }
         if (config.id) {
             $div.attr('id', config.id);
+        }
+        if (config.width) {
+            $div.css('width', config.width);
         }
         var children = config.children;
         if (children && children.length > 0) {

@@ -30,15 +30,15 @@
             <div class="com-drag" data-size="<%=size%>" data-type="<%=type%>">
                 <p class="title"><%=title%></p>
                 <div class="com-preview">
-                    <header><%= title %><span class="com-h-btn close">X</span></header>
+                    <header><span class="title"><%= title %></span><span class="com-h-btn close">X</span></header>
                 </div>
             </div>
         </li>
     </script>
     
     <script id="tpl-com-r" type="text/template">    
-        <div class="com-preview">
-            <header><%= title %><span class="com-h-btn close">X</span></header>
+        <div class="com-preview <%= className%>">
+            <header><span class="title"><%= title %></span><span class="com-h-btn close">X</span></header>
         </div>
     </script>
 

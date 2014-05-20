@@ -109,7 +109,8 @@
                 });
                 $dragClone.addClass(options.cls);
                 $dragClone.attr('id', options.id)
-                          .attr('data-width', options.width);
+                          .attr('data-width', options.width)
+                          .attr('data-type', options.type);
             };
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
@@ -143,6 +144,7 @@
                         width: widthPercentage * 100 + '%',
                         height: size.height,
                         cls: type,
+                        type: type,
                         id: editor.idGen(type)
                     });
                     leftSpace[this.id] -= widthSpace;
@@ -185,6 +187,8 @@
                             sectionCfg.children = getCfgFromSortable($section);
                         } else {
                             sectionCfg.type = 'item';
+                            sectionCfg.className = $section.data('type');
+                            sectionCfg.title = $section.find('.title').html();
                         }
                         sectionCfg.width = $section.data('width');
                         data.push(sectionCfg);
