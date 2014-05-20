@@ -11,7 +11,9 @@
     /**-------------
         内部使用到的函数
      -----------------*/
-
+    function id(idStr) {
+        return '#' + idStr;
+    }
 
     /**
      * 界面编辑器
@@ -158,6 +160,38 @@
                 opacity: OPACITY
             });
         },
+
+
+        /**
+         * 获取编辑器的编辑数据
+         * return {Object}
+         */
+        getData: function () {
+            var result = {},
+                getCfgFromSortable = function (sectionArr) {
+                    var data = [];
+                    _.each(sectionArr, function (section) {
+                        var $section = $(id(section)),
+                            itemOrderArr;
+                        if (!$section.hasClass('ui-sortable')) {
+                            return;
+                        }
+                        itemOrderArr = $section.sortable('toArray');
+                        data.push({
+                            id: section,
+                            cfg: {},
+                            children: getCfgFromSortable(itemOrderArr)
+                        });
+                    });
+                    return data;
+                },
+                sectionOrderArr = $('.horizon-container').sortable('toArray');
+
+            result.children = getCfgFromSortable(sectionOrderArr);
+            return result;
+        },
+
+
         idGen: function (prefix, spliter) {
             var counter = this.counter;
             if (!counter[prefix]) {

@@ -18,4 +18,9 @@
     $('.toolbar').on('click', '.open-editor', function () {
         editor.show();
     });
+    
+    $('.toolbar').on('click', '.save', function () {
+        var data = editor.getData();
+        localStorage.setItem('view-data', JSON.stringify(data));
+    });
 })(window);
