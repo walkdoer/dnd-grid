@@ -26,10 +26,12 @@
         </div>
     </script>
     <script id="tpl-com" type="text/template">
-        <li class="com-drag" data-size="<%=size%>" data-type="<%=type%>">
-            <%=title%>
-            <div class="com">
-                <header><%= title %><span class="com-h-btn close">X</span></header>
+        <li>
+            <div class="com-drag" data-size="<%=size%>" data-type="<%=type%>">
+                <p class="title"><%=title%></p>
+                <div class="com-preview">
+                    <header><%= title %><span class="com-h-btn close">X</span></header>
+                </div>
             </div>
         </li>
     </script>

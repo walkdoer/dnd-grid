@@ -63,7 +63,7 @@
 .workspace .ui-highlight {
   background-color: #ff0;
 }
-.com {
+.com-preview {
   height: 150px;
   /* border: 1px solid #666666; */
   background-color: #ccc;
@@ -78,7 +78,7 @@
   box-shadow: inset 0 0 3px #000;
   text-align: center;
 }
-.com header {
+.com-preview  header {
   color: #fff;
   text-shadow: #000 0 1px;
   box-shadow: 5px;
@@ -133,4 +133,14 @@
 
 .horizon .sortable-place-holder{
 	float:left;
+}
+
+.components .com-preview {
+	display: none;
+}
+.ui-draggable-dragging .com-preview {
+	display: block;
+}
+.ui-draggable-dragging .title{
+	display: none;
 }

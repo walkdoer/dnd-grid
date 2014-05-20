@@ -94,8 +94,8 @@
                 cursor: 'move',
                 helper: function () {
                     var $com = $(this),
-                        size = editor.getSize($com.data('size')),
-                        $view = $com.find('.com').clone().show();
+                        $view = $com.clone(),
+                        size = editor.getSize($com.data('size'));
                     $view.css(size);
                     return $view;
                 }
@@ -121,7 +121,7 @@
                 },
                 drop: function (e, ui) {
                     var that = this,
-                        $dragClone = $(ui.draggable).find('.com').clone(),
+                        $dragClone = $(ui.draggable).find('.com-preview').clone(),
                         $column = $(e.target);
                     $dragClone.append($column.children().length);
                     $dragClone.on('click', '.close', function () {
