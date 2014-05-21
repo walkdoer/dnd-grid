@@ -28,6 +28,7 @@
     var template = $('#tpl-com-r').html();
 
     function renderFromConfig(config) {
+        if (!config) { return; }
         var $div,
             $parent;
         if (config.type === 'item') {

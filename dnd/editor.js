@@ -97,6 +97,8 @@
                             title: config.title,
                             className: config.className
                         }));
+                    } else if (config.root){
+                        $div = $('<div class="horizon-container clearfix">');
                     } else {
                         $div = $('<div class="drop-area horizon clearfix">');
                     }
@@ -255,6 +257,7 @@
                     return data;
                 };
             result.type = 'cont';
+            result.root = true;
             result.children = getCfgFromSortable($('.horizon-container'));
             return result;
         },
