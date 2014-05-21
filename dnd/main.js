@@ -12,21 +12,6 @@
                 {type: 'report', size: '3*1.5', title: '报表'},
             ]
         });
-
-    var $body = $('body').append(editor.render().$el.hide());
-
-
-    $('.toolbar').on('click', '.open-editor', function () {
-        editor.show();
-    });
-
-    $('.toolbar').on('click', '.save', function () {
-        editor.save();
-    });
-
-
-    var template = $('#tpl-com-r').html();
-
     function renderFromConfig(config) {
         if (!config) { return; }
         var $div,
@@ -57,5 +42,24 @@
         }
         return $div;
     }
-    $body.append(renderFromConfig(editor.load()));
+    var $body = $('body').append(editor.render().$el.hide());
+
+    //打开编辑器
+    $('.toolbar').on('click', '.open-editor', function () {
+        $('.preview').hide();
+        editor.show();
+    });
+    //保存编辑器数据
+    $('.toolbar').on('click', '.save', function () {
+        $('.preview').show();
+        editor.save().hide();
+    });
+    //监听保存事件，重新渲染界面
+    editor.on('save', function (data) {
+        $('.preview').empty()
+                     .append(renderFromConfig(data));
+    });
+    var template = $('#tpl-com-r').html();
+    $body.find('.preview').append(renderFromConfig(editor.load()));
+
 })(window);

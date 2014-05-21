@@ -54,6 +54,16 @@
             }
             this.trigger('aftershow');
         },
+
+
+
+        /**
+         * 隐藏
+         */
+        hide: function () {
+            this.$el.hide();
+            this.trigger('hidden');
+        },
         
 
         /**
@@ -143,8 +153,10 @@
             } else {
                 //根据用户数据渲染编辑器
                 this.on('aftershow', function () {
+                    if (that.rendered) { return; }
                     var $result = that._renderEditData(editData);
                     $workspace.append($result);
+                    that.rendered = true;
                     that._initDnd();
                 });
                 
@@ -272,7 +284,7 @@
                     var data = [],
                         sectionArr = $sortable.sortable('toArray');
                     _.each(sectionArr, function (section) {
-                        var $section = $(id(section)),
+                        var $section = $sortable.find(id(section)),
                             sectionCfg = { id: section};
                         if ($section.hasClass('ui-sortable')) {
                             sectionCfg.tag = 'cont';
@@ -292,7 +304,7 @@
                 };
             result.tag = 'cont';
             result.root = true;
-            result.children = getCfgFromSortable($('.horizon-container'));
+            result.children = getCfgFromSortable($('.editor .horizon-container'));
             return result;
         },
 
@@ -303,6 +315,7 @@
         save: function () {
             var data = this.getData();
             localStorage.setItem(this.storage, JSON.stringify(data));
+            this.trigger('save', data);
             return this;
         },
 
