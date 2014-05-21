@@ -36,9 +36,15 @@
             this._renderSideBar();
             this._renderWorkSpace();
             this._initDnd();
+            this.load();
             return this;
         },
 
+
+        /**
+         * 显示
+         * 在这个函数中包括了计算宽度的步骤
+         */
         show: function () {
             this.$el.show();
             if (!this.itemWidth) {
@@ -88,6 +94,10 @@
             this.$workspace.append($horizonContainer);
         },
 
+
+        /**
+         * 初始化拖拽
+         */
         _initDnd: function () {
             var editor = this,
                 leftSpace = this.leftSpace;
@@ -170,6 +180,24 @@
 
 
         /**
+         * load
+         * 加载用户的配置，并渲染编辑器
+         */
+        load: function () {
+            var editData = this.getData();
+            this.render(editData);
+        },
+        
+        
+        /**
+         * 渲染编辑器
+         * @params {Object} 用户保存下来的编辑数据
+         */
+        renderEditor: function (editData) {
+            
+        },
+
+        /**
          * 获取编辑器的编辑数据
          * return {Object}
          */
@@ -201,6 +229,10 @@
         },
 
 
+        /**
+         * id生成器
+         * @return {String}
+         */
         idGen: function (prefix, spliter) {
             var counter = this.counter;
             if (!counter[prefix]) {
@@ -208,6 +240,12 @@
             }
             return [prefix, counter[prefix]++].join(spliter || '-');
         },
+
+
+        /**
+         * 获取尺寸的配置
+         * @return {Object} {width: 12, height: 13} 
+         */
         getSizeCfg: function (cfgStr) {
             var cfg = null;
             if (cfgStr) {
@@ -219,6 +257,11 @@
             }
             return cfg;
         },
+
+
+        /**
+         * 获取尺寸
+         */
         getSize: function (cfgStr) {
             var sizeCfg = this.getSizeCfg(cfgStr),
                 itemWidth = this.itemWidth,
@@ -233,7 +276,10 @@
             };
         },
 
-
+        
+        /**
+         * 获取宽度的比值
+         */
         getWidthPercentage: function (cfgStr) {
             var sizeCfg = this.getSizeCfg(cfgStr),
                 part = 1/this.colNum;
