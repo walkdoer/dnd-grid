@@ -37,7 +37,7 @@
                 className: config.className
             }));
         } else {
-            $div = $('<div>');
+            $div = $('<div class="clearfix">');
         }
         $parent = $div;
         if (config.class) {

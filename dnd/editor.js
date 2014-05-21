@@ -80,16 +80,17 @@
         _renderEditData: function (editData) {
             var editor = this,
                 template = $('#tpl-com-preview').html(),
-                renderFromEditData = function(config) {
+                renderFromEditData = function(config, parent) {
                     var $div,
                         $parent;
                     if (config.tag === 'item') {
                         $div = $(_.template(template, config));
-                        editor._dropCom($div, config);
+                        editor._dropCom($div, config, parent);
                     } else if (config.root){
                         $div = $('<div class="horizon-container clearfix">');
                     } else {
                         $div = $('<div class="drop-area horizon clearfix">');
+                        editor.leftSpace[config.id] = editor.colNum;
                     }
                     $parent = $div;
                     if (config.class) {
@@ -104,7 +105,7 @@
                     var children = config.children;
                     if (children && children.length > 0) {
                         _.each(children, function (child) {
-                            $parent.append(renderFromEditData(child));
+                            $parent.append(renderFromEditData(child, {id: config.id}));
                         });
                     }
                     return $div;
@@ -150,8 +151,9 @@
             }
         },
 
-        _dropCom: function ($drag, cfg) {
+        _dropCom: function ($drag, cfg, parent) {
             var sizeCfgStr = $drag.attr('data-size'),
+                editor = this,
                 widthSpace = this.getSizeCfg(sizeCfgStr).width,
                 type = $drag.data('type'),
                 size = this.getSize(sizeCfgStr),
@@ -163,7 +165,11 @@
             $drag.addClass(cfg.className);
             $drag.attr('id', cfg.id)
                  .attr('data-width', widthPercentage);
-            this.leftSpace[cfg.id] -= widthSpace;
+            this.leftSpace[parent.id] -= widthSpace;
+            $drag.on('click', '.close', function () {
+                $drag.remove();
+                editor.leftSpace[parent.id]+= widthSpace;
+            });
         },
         /**
          * 初始化拖拽
