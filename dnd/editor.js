@@ -67,9 +67,12 @@
             var $comsContainer = $sidebar.find('.components');
             //取出各个组件
             var components = this.components,
-                comTpl = $('#tpl-com').html();
+                comTpl = $('#tpl-com').html(),
+                comPreviewTpl = $('#tpl-com-preview').html();
             _.each(components, function (com) {
+                com.className = com.type;
                 var $com = $(_.template(comTpl, com));
+                $com.find('.com-drag').append($(_.template(comPreviewTpl, com)));
                 $comsContainer.append($com);
             });
         },
@@ -93,10 +96,7 @@
                     var $div,
                         $parent;
                     if (config.type === 'item') {
-                        $div = $(_.template(template, {
-                            title: config.title,
-                            className: config.className
-                        }));
+                        $div = $(_.template(template, config));
                     } else if (config.root){
                         $div = $('<div class="horizon-container clearfix">');
                     } else {
@@ -137,7 +137,9 @@
             this.$workspace.append($container);
         },
 
-
+        _dropCom: function () {
+            
+        },
         /**
          * 初始化拖拽
          */
@@ -149,8 +151,8 @@
                 cursor: 'move',
                 helper: function () {
                     var $com = $(this),
-                        $view = $com.clone(),
-                        size = editor.getSize($com.data('size'));
+                        $view = $com.find('.com-preview').clone(),
+                        size = editor.getSize($view.data('size'));
                     $view.css(size);
                     return $view;
                 }
@@ -162,13 +164,12 @@
                 });
                 $dragClone.addClass(options.cls);
                 $dragClone.attr('id', options.id)
-                          .attr('data-width', options.width)
-                          .attr('data-type', options.type);
+                          .attr('data-width', options.width);
             };
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
-                    var sizeCfg = editor.getSizeCfg(draggable.attr('data-size')),
+                    var sizeCfg = editor.getSizeCfg(draggable.find('.com-preview').attr('data-size')),
                         needSpace;
                     if (sizeCfg) {
                         needSpace = sizeCfg.width;
@@ -188,9 +189,9 @@
                     });
 
                     var draggable = ui.draggable,
-                        sizeCfgStr = draggable.attr('data-size'),
+                        sizeCfgStr = $dragClone.attr('data-size'),
                         widthSpace = editor.getSizeCfg(sizeCfgStr).width,
-                        type = draggable.data('type'),
+                        type = $dragClone.data('type'),
                         size = editor.getSize(sizeCfgStr),
                         widthPercentage = editor.getWidthPercentage(sizeCfgStr);
                     dressUpElement($dragClone, {
@@ -252,6 +253,7 @@
                             sectionCfg.title = $section.find('.title').html();
                         }
                         sectionCfg.width = $section.data('width');
+                        sectionCfg.size = $section.data('size');
                         data.push(sectionCfg);
                     });
                     return data;
