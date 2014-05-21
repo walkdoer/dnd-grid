@@ -39,6 +39,7 @@
             this._renderSideBar();
             var editData = this.load();
             this._renderWorkSpace(editData);
+            
             this._initDnd();
             return this;
         },
@@ -53,6 +54,7 @@
             if (!this.itemWidth) {
                 this.itemWidth = this.$workspace.width() / this.colNum;
             }
+            this.trigger('aftershow');
         },
         
 
@@ -77,26 +79,15 @@
             });
         },
 
-
-        /**
-         * 渲染工作臺
-         * @params editData {Object} 用户保存下来的编辑数据
-         * 
-         */
-        _renderWorkSpace: function (editData) {
-            //添加Workspace
-            this.$workspace = $('<div class="workspace">');
-            this.$el.append(this.$workspace);
-
-            var colNum = this.colNum,
-                leftSpace = this.leftSpace,
-                $container,
+        _renderEditData: function (editData) {
+            var editor = this,
                 template = $('#tpl-com-preview').html(),
                 renderFromEditData = function(config) {
                     var $div,
                         $parent;
                     if (config.type === 'item') {
                         $div = $(_.template(template, config));
+                        editor._dropCom($div, config);
                     } else if (config.root){
                         $div = $('<div class="horizon-container clearfix">');
                     } else {
@@ -120,6 +111,24 @@
                     }
                     return $div;
                 };
+            return renderFromEditData(editData);
+        },
+        /**
+         * 渲染工作臺
+         * @params editData {Object} 用户保存下来的编辑数据
+         *
+         */
+        _renderWorkSpace: function (editData) {
+            //添加Workspace
+            var $workspace;
+            this.$workspace = $workspace = $('<div class="workspace">');
+            this.$el.append($workspace);
+
+            var colNum = this.colNum,
+                leftSpace = this.leftSpace,
+                that = this,
+                $container;
+
             if (!editData || !editData.children || !editData.children.length) {
                 //初始化 Horizon容器
                 $container = $('<div class="horizon-container clearfix">');
@@ -132,13 +141,29 @@
                 }
             } else {
                 //根据用户数据渲染编辑器
-                $container = renderFromEditData(editData);
+                this.on('aftershow', function () {
+                    var $result = that._renderEditData(editData);
+                    $workspace.append($result);
+                });
+                
             }
-            this.$workspace.append($container);
+            $workspace.append($container);
         },
 
-        _dropCom: function () {
-            
+        _dropCom: function ($drag, cfg) {
+            var sizeCfgStr = $drag.attr('data-size'),
+                widthSpace = this.getSizeCfg(sizeCfgStr).width,
+                type = $drag.data('type'),
+                size = this.getSize(sizeCfgStr),
+                widthPercentage = this.getWidthPercentage(sizeCfgStr) * 100 + '%';
+            $drag.css({
+                height: size.height,
+                width: widthPercentage
+            });
+            $drag.addClass(type);
+            $drag.attr('id', cfg.id)
+                 .attr('data-width', widthPercentage);
+            this.leftSpace[cfg.id] -= widthSpace;
         },
         /**
          * 初始化拖拽
@@ -188,8 +213,7 @@
                         leftSpace[that.id]+= widthSpace;
                     });
 
-                    var draggable = ui.draggable,
-                        sizeCfgStr = $dragClone.attr('data-size'),
+                    var sizeCfgStr = $dragClone.attr('data-size'),
                         widthSpace = editor.getSizeCfg(sizeCfgStr).width,
                         type = $dragClone.data('type'),
                         size = editor.getSize(sizeCfgStr),
