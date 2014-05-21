@@ -39,7 +39,8 @@
             this._renderSideBar();
             this._renderWorkSpace();
             this._initDnd();
-            this.load();
+            var editData = this.load();
+            this.renderEditor(editData);
             return this;
         },
 
@@ -184,12 +185,12 @@
 
         /**
          * load
-         * 加载用户的配置，并渲染编辑器
+         * 加载用户的配置
          */
         load: function () {
-            var editData = this.getData();
-            this.render(editData);
+            return JSON.parse(localStorage.getItem(this.storage));
         },
+        
         
         
         /**
@@ -197,7 +198,7 @@
          * @params {Object} 用户保存下来的编辑数据
          */
         renderEditor: function (editData) {
-            
+            console.log(editData);
         },
 
         /**

@@ -2,7 +2,6 @@
     'use strict';
 
     var Editor = window.DnDEditor,
-        STORAGE_KEY = 'view-data',
         editor = new Editor({
             className: 'editor',
             storage: 'view-data',
@@ -15,23 +14,19 @@
         });
 
     var $body = $('body').append(editor.render().$el.hide());
-    
-    
+
+
     $('.toolbar').on('click', '.open-editor', function () {
         editor.show();
     });
-    
+
     $('.toolbar').on('click', '.save', function () {
         editor.save();
     });
-    
-    function getConfig () {
-        var cfg = JSON.parse(localStorage.getItem(STORAGE_KEY));
-        return cfg;
-    }
-    
+
+
     var template = $('#tpl-com-r').html();
-    
+
     function renderFromConfig(config) {
         var $div,
             $parent;
@@ -61,5 +56,5 @@
         }
         return $div;
     }
-    $body.append(renderFromConfig(getConfig()));
+    $body.append(renderFromConfig(editor.load()));
 })(window);
