@@ -83,7 +83,7 @@
                 renderFromEditData = function(config) {
                     var $div,
                         $parent;
-                    if (config.type === 'item') {
+                    if (config.tag === 'item') {
                         $div = $(_.template(template, config));
                         editor._dropCom($div, config);
                     } else if (config.root){
@@ -269,11 +269,13 @@
                         var $section = $(id(section)),
                             sectionCfg = { id: section};
                         if ($section.hasClass('ui-sortable')) {
-                            sectionCfg.type = 'cont';
+                            sectionCfg.tag = 'cont';
                             sectionCfg.children = getCfgFromSortable($section);
                         } else {
-                            sectionCfg.type = 'item';
-                            sectionCfg.className = $section.data('type');
+                            var type = $section.data('type');
+                            sectionCfg.tag = 'item';
+                            sectionCfg.className = type;
+                            sectionCfg.type = type;
                             sectionCfg.title = $section.find('.title').html();
                         }
                         sectionCfg.width = $section.data('width');
@@ -282,7 +284,7 @@
                     });
                     return data;
                 };
-            result.type = 'cont';
+            result.tag = 'cont';
             result.root = true;
             result.children = getCfgFromSortable($('.horizon-container'));
             return result;

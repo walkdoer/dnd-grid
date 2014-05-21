@@ -31,7 +31,7 @@
         if (!config) { return; }
         var $div,
             $parent;
-        if (config.type === 'item') {
+        if (config.tag === 'item') {
             $div = $(_.template(template, {
                 title: config.title,
                 className: config.className
