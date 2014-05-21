@@ -37,10 +37,9 @@
          */
         render: function () {
             this._renderSideBar();
-            this._renderWorkSpace();
-            this._initDnd();
             var editData = this.load();
-            this.renderEditor(editData);
+            this._renderWorkSpace(editData);
+            this._initDnd();
             return this;
         },
 
@@ -78,24 +77,62 @@
 
         /**
          * 渲染工作臺
+         * @params editData {Object} 用户保存下来的编辑数据
+         * 
          */
-        _renderWorkSpace: function () {
+        _renderWorkSpace: function (editData) {
             //添加Workspace
             this.$workspace = $('<div class="workspace">');
             this.$el.append(this.$workspace);
 
             var colNum = this.colNum,
-                leftSpace = this.leftSpace;
-            //初始化 Horizon容器
-            var $horizonContainer = $('<div class="horizon-container clearfix">');
-            for (var i = 0; i < colNum; i++) {
-                var $item = $('<div class="drop-area horizon clearfix"></div>');
-                var id = this.idGen('dnd-drop-area');
-                $item.attr('id', id);
-                leftSpace[id] = colNum;
-                $horizonContainer.append($item);
+                leftSpace = this.leftSpace,
+                $container,
+                template = $('#tpl-com-preview').html(),
+                renderFromEditData = function(config) {
+                    var $div,
+                        $parent;
+                    if (config.type === 'item') {
+                        $div = $(_.template(template, {
+                            title: config.title,
+                            className: config.className
+                        }));
+                    } else {
+                        $div = $('<div class="drop-area horizon clearfix">');
+                    }
+                    $parent = $div;
+                    if (config.class) {
+                        $div.addClass(config.class);
+                    }
+                    if (config.id) {
+                        $div.attr('id', config.id);
+                    }
+                    if (config.width) {
+                        $div.css('width', config.width);
+                    }
+                    var children = config.children;
+                    if (children && children.length > 0) {
+                        _.each(children, function (child) {
+                            $parent.append(renderFromEditData(child));
+                        });
+                    }
+                    return $div;
+                };
+            if (!editData || !editData.children || !editData.children.length) {
+                //初始化 Horizon容器
+                $container = $('<div class="horizon-container clearfix">');
+                for (var i = 0; i < colNum; i++) {
+                    var $item = $('<div class="drop-area horizon clearfix"></div>');
+                    var id = this.idGen('dnd-drop-area');
+                    $item.attr('id', id);
+                    leftSpace[id] = colNum;
+                    $container.append($item);
+                }
+            } else {
+                //根据用户数据渲染编辑器
+                $container = renderFromEditData(editData);
             }
-            this.$workspace.append($horizonContainer);
+            this.$workspace.append($container);
         },
 
 
@@ -190,16 +227,7 @@
         load: function () {
             return JSON.parse(localStorage.getItem(this.storage));
         },
-        
-        
-        
-        /**
-         * 渲染编辑器
-         * @params {Object} 用户保存下来的编辑数据
-         */
-        renderEditor: function (editData) {
-            console.log(editData);
-        },
+
 
         /**
          * 获取编辑器的编辑数据
@@ -212,8 +240,7 @@
                         sectionArr = $sortable.sortable('toArray');
                     _.each(sectionArr, function (section) {
                         var $section = $(id(section)),
-                            sectionCfg = { id: section},
-                            itemOrderArr;
+                            sectionCfg = { id: section};
                         if ($section.hasClass('ui-sortable')) {
                             sectionCfg.type = 'cont';
                             sectionCfg.children = getCfgFromSortable($section);
