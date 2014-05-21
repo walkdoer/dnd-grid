@@ -39,8 +39,6 @@
             this._renderSideBar();
             var editData = this.load();
             this._renderWorkSpace(editData);
-            
-            this._initDnd();
             return this;
         },
 
@@ -139,15 +137,17 @@
                     leftSpace[id] = colNum;
                     $container.append($item);
                 }
+                $workspace.append($container);
+                this._initDnd();
             } else {
                 //根据用户数据渲染编辑器
                 this.on('aftershow', function () {
                     var $result = that._renderEditData(editData);
                     $workspace.append($result);
+                    that._initDnd();
                 });
                 
             }
-            $workspace.append($container);
         },
 
         _dropCom: function ($drag, cfg) {
@@ -160,7 +160,7 @@
                 height: size.height,
                 width: widthPercentage
             });
-            $drag.addClass(type);
+            $drag.addClass(cfg.className);
             $drag.attr('id', cfg.id)
                  .attr('data-width', widthPercentage);
             this.leftSpace[cfg.id] -= widthSpace;
