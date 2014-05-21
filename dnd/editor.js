@@ -19,11 +19,14 @@
      * 界面编辑器
      */
     var Editor = Backbone.View.extend({
+
+
         initialize: function (options) {
             this.$el.addClass(options.className);
             this.colNum = options.colNum || COLNUM;
             this.components = options.components;
             this.opacity = options.opacity || OPACITY;
+            this.storage = options.storage;
             this.leftSpace = {};
             this.counter = {};
         },
@@ -226,6 +229,16 @@
             result.type = 'cont';
             result.children = getCfgFromSortable($('.horizon-container'));
             return result;
+        },
+
+
+        /**
+         * save
+         */
+        save: function () {
+            var data = this.getData();
+            localStorage.setItem(this.storage, JSON.stringify(data));
+            return this;
         },
 
 

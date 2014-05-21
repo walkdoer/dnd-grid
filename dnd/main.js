@@ -5,6 +5,7 @@
         STORAGE_KEY = 'view-data',
         editor = new Editor({
             className: 'editor',
+            storage: 'view-data',
             width: 700,
             components: [
                 {type: 'pie', size: '1*1', title: '饼图'},
@@ -21,8 +22,7 @@
     });
     
     $('.toolbar').on('click', '.save', function () {
-        var data = editor.getData();
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+        editor.save();
     });
     
     function getConfig () {
