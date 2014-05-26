@@ -66,7 +66,7 @@
             this.$el.hide();
             this.trigger('hidden');
         },
-        
+
 
         /**
          * 渲染侧边工具栏
@@ -77,15 +77,16 @@
 
             this.$el.append((this.$sidebar = $sidebar));
             var $comsContainer = $sidebar.find('.components');
-            //取出各个组件
-            var components = this.components,
-                comTpl = $('#tpl-com').html(),
-                comPreviewTpl = $('#tpl-com-preview').html();
-            _.each(components, function (com) {
-                com.className = com.type;
-                var $com = $(_.template(comTpl, com));
-                $com.find('.com-drag').append($(_.template(comPreviewTpl, com)));
-                $comsContainer.append($com);
+            $comsContainer.append(new Menu({
+                tree: {
+                    text: '组件菜单',
+                    childNodes: this.components
+                }
+            }));
+            var comPreviewTpl = $('#tpl-com-preview').html();
+            $comsContainer.find('.com-drag', function (i, com) {
+                $(com).append($(_.template(comPreviewTpl, com)));
+
             });
         },
 
@@ -363,7 +364,7 @@
             };
         },
 
-        
+
         /**
          * 获取宽度的比值
          */
