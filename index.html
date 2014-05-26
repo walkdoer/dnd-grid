@@ -25,22 +25,22 @@
             <ul class="components"></ul>
         </div>
     </script>
-    <script id="tpl-com" type="text/template">
+    <script id="tpl-menu-item" type="text/template">
         <li>
-            <div class="com-drag">
-                <p class="title"><%=title%></p>
+            <div class="com-drag" data-size="<%=size%>" data-type="<%=type%>">
+                <p class="menu-text"><%= title %></p>
             </div>
         </li>
     </script>
-    
-    <script id="tpl-com-preview" type="text/template">    
+
+    <script id="tpl-com-preview" type="text/template">
         <div class="com-preview" data-size="<%=size%>" data-type="<%=type%>">
             <header><span class="title"><%= title %></span><span class="com-h-btn close red-btn">delete</span></header>
             <div class="com-preview-con"></div>
         </div>
     </script>
-    
-    <script id="tpl-com-r" type="text/template">    
+
+    <script id="tpl-com-r" type="text/template">
         <div class="com-preview <%= className%>">
             <header><span class="title"><%= title %></span></header>
         </div>
@@ -50,7 +50,7 @@
     <script src="./dnd/menu.js" type="text/javascript" charset="utf-8"></script>
     <script src="./dnd/editor.js" type="text/javascript" charset="utf-8"></script>
     <script src="./dnd/main.js" type="text/javascript" charset="utf-8"></script>
-    
+
 </body>
 
 </html>

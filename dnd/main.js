@@ -10,25 +10,25 @@
             comSpace: 2,
             components: [
                 {
-                    text: '用户流量',
+                    title: '用户流量',
                     childNodes: [
-                        {type: 'pie', size: '1*1', text: '饼图'},
-                        {type: 'trend', size: '2*1', text: '趋势'},
-                        {type: 'report', size: '3*1.5', text: '报表'}
+                        {type: 'pie', size: '1*1', title: '饼图'},
+                        {type: 'trend', size: '2*1', title: '趋势'},
+                        {type: 'report', size: '3*1.5', title: '报表'}
                     ]
                 }, {
-                    text: '统计分析',
+                    title: '统计分析',
                     childNodes: [
-                        {type: 'pie', size: '1*1', text: '饼图'},
-                        {type: 'trend', size: '2*1', text: '趋势'},
-                        {type: 'report', size: '3*1.5', text: '报表'}
+                        {type: 'pie', size: '1*1', title: '饼图'},
+                        {type: 'trend', size: '2*1', title: '趋势'},
+                        {type: 'report', size: '3*1.5', title: '报表'}
                     ]
                 }, {
-                    text: '点击区域统计',
+                    title: '点击区域统计',
                     childNodes: [
-                        {type: 'pie', size: '1*1', text: '饼图'},
-                        {type: 'trend', size: '2*1', text: '趋势'},
-                        {type: 'report', size: '3*1.5', text: '报表'}
+                        {type: 'pie', size: '1*1', title: '饼图'},
+                        {type: 'trend', size: '2*1', title: '趋势'},
+                        {type: 'report', size: '3*1.5', title: '报表'}
                     ]
                 }
             ]

@@ -77,16 +77,24 @@
 
             this.$el.append((this.$sidebar = $sidebar));
             var $comsContainer = $sidebar.find('.components');
-            $comsContainer.append(new Menu({
+            var menu = new Menu({
+                leafTpl: $('#tpl-menu-item').html(),
                 tree: {
-                    text: '组件菜单',
+                    title: '组件菜单',
                     root: true,
                     childNodes: this.components
                 }
-            }).render().$el);
+            }).render();
+            $comsContainer.append(menu.$el);
+
             var comPreviewTpl = $('#tpl-com-preview').html();
-            $comsContainer.find('.com-drag', function (i, com) {
-                $(com).append($(_.template(comPreviewTpl, com)));
+            menu.$('.com-drag').each(function (i, com) {
+                var $com = $(com);
+                $com.append($(_.template(comPreviewTpl, {
+                    type: $com.data('type'),
+                    size: $com.data('size'),
+                    title: $com.find('.menu-text').html()
+                })));
 
             });
         },
