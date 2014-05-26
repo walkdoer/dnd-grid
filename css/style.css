@@ -12,10 +12,12 @@
 .editor .workspace{
     background-color: #F7F7F7;
     border: 1px solid #dedede;
-    margin-left: 240px;
-	padding: 30px;
+	
+    padding: 30px;
     box-sizing: border-box;
     position: relative;
+    float: right;
+    width: 79%;
 }
 
 .editor .workspace:after{
@@ -35,7 +37,6 @@
 
 
 .editor .sidebar{
-    /* position: fixed; */
     width: 200px;
     float: left;
     background-color: #ededed;
