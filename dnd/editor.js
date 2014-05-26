@@ -28,6 +28,8 @@
             this.opacity = options.opacity || OPACITY;
             this.storage = options.storage;
             this.leftSpace = {};
+            this.comSpace = options.comSpace;
+            this.widthPercent = (100 - this.comSpace * (this.colNum - 1)) / this.colNum;
             this.counter = {};
         },
 
@@ -87,6 +89,10 @@
             });
         },
 
+
+        /**
+         * 渲染编辑数据
+         */
         _renderEditData: function (editData) {
             var editor = this,
                 template = $('#tpl-com-preview').html(),
@@ -122,6 +128,8 @@
                 };
             return renderFromEditData(editData);
         },
+
+
         /**
          * 渲染工作臺
          * @params editData {Object} 用户保存下来的编辑数据
@@ -169,7 +177,7 @@
                 widthSpace = this.getSizeCfg(sizeCfgStr).width,
                 type = $drag.data('type'),
                 size = this.getSize(sizeCfgStr),
-                widthPercentage = this.getWidthPercentage(sizeCfgStr) * 100 + '%';
+                widthPercentage = this.getWidthPercentage(sizeCfgStr) + '%';
             $drag.css({
                 height: size.height,
                 width: widthPercentage
@@ -237,7 +245,7 @@
                         size = editor.getSize(sizeCfgStr),
                         widthPercentage = editor.getWidthPercentage(sizeCfgStr);
                     dressUpElement($dragClone, {
-                        width: widthPercentage * 100 + '%',
+                        width: widthPercentage + '%',
                         height: size.height,
                         cls: type,
                         type: type,
@@ -372,9 +380,8 @@
          * 获取宽度的比值
          */
         getWidthPercentage: function (cfgStr) {
-            var sizeCfg = this.getSizeCfg(cfgStr),
-                part = 1/this.colNum;
-            return part * sizeCfg.width;
+            var sizeCfg = this.getSizeCfg(cfgStr);
+            return this.widthPercent * sizeCfg.width;
         }
     });
 

@@ -6,6 +6,8 @@
             className: 'editor',
             storage: 'view-data',
             width: 700,
+            //拖拽组件之间的空间, 使用percent
+            comSpace: 2,
             components: [
                 {type: 'pie', size: '1*1', title: '饼图'},
                 {type: 'trend', size: '2*1', title: '趋势'},
