@@ -101,7 +101,8 @@
                         $parent;
                     if (config.tag === 'item') {
                         $div = $(_.template(template, config));
-                        editor._dropCom($div, config, parent);
+                        config.parentId = parent.id;
+                        editor._dropCom($div, config);
                     } else if (config.root){
                         $div = $('<div class="horizon-container clearfix">');
                     } else {
@@ -171,11 +172,15 @@
             }
         },
 
-        _dropCom: function ($drag, cfg, parent) {
+
+        /**
+         * 将拖拽元件放入drop area中
+         */
+        _dropCom: function ($drag, cfg) {
             var sizeCfgStr = $drag.attr('data-size'),
                 editor = this,
+                parentId = cfg.parentId,
                 widthSpace = this.getSizeCfg(sizeCfgStr).width,
-                type = $drag.data('type'),
                 size = this.getSize(sizeCfgStr),
                 widthPercentage = this.getWidthPercentage(sizeCfgStr) + '%';
             $drag.css({
@@ -185,10 +190,10 @@
             $drag.addClass(cfg.className);
             $drag.attr('id', cfg.id)
                  .attr('data-width', widthPercentage);
-            this.leftSpace[parent.id] -= widthSpace;
+            this.leftSpace[parentId] -= widthSpace;
             $drag.on('click', '.close', function () {
                 $drag.remove();
-                editor.leftSpace[parent.id]+= widthSpace;
+                editor.leftSpace[parentId]+= widthSpace;
             });
         },
         /**
@@ -208,15 +213,6 @@
                     return $view;
                 }
             });
-            var dressUpElement = function ($dragClone, options) {
-                $dragClone.css({
-                    height: options.height,
-                    width: options.width
-                });
-                $dragClone.addClass(options.cls);
-                $dragClone.attr('id', options.id)
-                          .attr('data-width', options.width);
-            };
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
@@ -233,26 +229,20 @@
                     var that = this,
                         $dragClone = $(ui.draggable).find('.com-preview').clone(),
                         $column = $(e.target);
-                    $dragClone.append($column.children().length);
-                    $dragClone.on('click', '.close', function () {
-                        $dragClone.remove();
-                        leftSpace[that.id]+= widthSpace;
-                    });
 
                     var sizeCfgStr = $dragClone.attr('data-size'),
-                        widthSpace = editor.getSizeCfg(sizeCfgStr).width,
                         type = $dragClone.data('type'),
                         size = editor.getSize(sizeCfgStr),
                         widthPercentage = editor.getWidthPercentage(sizeCfgStr);
-                    dressUpElement($dragClone, {
+                    editor._dropCom($dragClone, {
                         width: widthPercentage + '%',
                         height: size.height,
-                        cls: type,
+                        className: type,
                         type: type,
-                        id: editor.idGen(type)
+                        id: editor.idGen(type),
+                        parentId: that.id
                     });
-                    leftSpace[this.id] -= widthSpace;
-                    $column.append($dragClone.removeClass('none'));
+                    $column.append($dragClone);
                 }
             });
             this.$workspace.find('.drop-area.horizon').sortable({
