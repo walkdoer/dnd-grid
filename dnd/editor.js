@@ -82,7 +82,7 @@
                     text: '组件菜单',
                     childNodes: this.components
                 }
-            }));
+            }).render().$el);
             var comPreviewTpl = $('#tpl-com-preview').html();
             $comsContainer.find('.com-drag', function (i, com) {
                 $(com).append($(_.template(comPreviewTpl, com)));
