@@ -80,6 +80,7 @@
             $comsContainer.append(new Menu({
                 tree: {
                     text: '组件菜单',
+                    root: true,
                     childNodes: this.components
                 }
             }).render().$el);

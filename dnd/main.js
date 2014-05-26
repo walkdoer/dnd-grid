@@ -9,9 +9,28 @@
             //拖拽组件之间的空间, 使用percent
             comSpace: 2,
             components: [
-                {type: 'pie', size: '1*1', text: '饼图'},
-                {type: 'trend', size: '2*1', text: '趋势'},
-                {type: 'report', size: '3*1.5', text: '报表'},
+                {
+                    text: '用户流量',
+                    childNodes: [
+                        {type: 'pie', size: '1*1', text: '饼图'},
+                        {type: 'trend', size: '2*1', text: '趋势'},
+                        {type: 'report', size: '3*1.5', text: '报表'}
+                    ]
+                }, {
+                    text: '统计分析',
+                    childNodes: [
+                        {type: 'pie', size: '1*1', text: '饼图'},
+                        {type: 'trend', size: '2*1', text: '趋势'},
+                        {type: 'report', size: '3*1.5', text: '报表'}
+                    ]
+                }, {
+                    text: '点击区域统计',
+                    childNodes: [
+                        {type: 'pie', size: '1*1', text: '饼图'},
+                        {type: 'trend', size: '2*1', text: '趋势'},
+                        {type: 'report', size: '3*1.5', text: '报表'}
+                    ]
+                }
             ]
         });
 
