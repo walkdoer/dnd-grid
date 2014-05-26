@@ -108,17 +108,12 @@
                     } else {
                         $div = $('<div class="drop-area horizon clearfix">');
                         editor.leftSpace[config.id] = editor.colNum;
+                        if (config.id) {
+                            $div.attr('id', config.id);
+                        }
                     }
                     $parent = $div;
-                    if (config.class) {
-                        $div.addClass(config.class);
-                    }
-                    if (config.id) {
-                        $div.attr('id', config.id);
-                    }
-                    if (config.width) {
-                        $div.css('width', config.width);
-                    }
+                  
                     var children = config.children;
                     if (children && children.length > 0) {
                         _.each(children, function (child) {
@@ -182,14 +177,17 @@
                 parentId = cfg.parentId,
                 widthSpace = this.getSizeCfg(sizeCfgStr).width,
                 size = this.getSize(sizeCfgStr),
-                widthPercentage = this.getWidthPercentage(sizeCfgStr) + '%';
+                widthPercentage = this.getWidthPercentage(sizeCfgStr),
+                //补充元素宽度
+                addUp = (widthSpace - 1) * this.comSpace;
+                
             $drag.css({
                 height: size.height,
-                width: widthPercentage
+                width: widthPercentage + addUp + '%'
             });
             $drag.addClass(cfg.className);
             $drag.attr('id', cfg.id)
-                 .attr('data-width', widthPercentage);
+                 .attr('data-width', widthPercentage + '%');
             this.leftSpace[parentId] -= widthSpace;
             $drag.on('click', '.close', function () {
                 $drag.remove();
