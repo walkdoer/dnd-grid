@@ -1,10 +1,14 @@
+/**
+ * backbone field
+ * backbone组件: 字段
+ */
 (function (window, undefined) {
     'use strict';
 
     var optionTpl = '<option value="<%= value %>"><%= text %></option>',
         labelTpl = '<label for="<%= id %>"><%= text%></label>';
     var DnDEditorField = Backbone.View.extend({
-        
+
         initialize: function (options) {
             this.type = options.type;
             this.options = options;
@@ -17,7 +21,7 @@
             }
             return this;
         },
-        
+
         renderField: function (fieldCfg) {
             var type = fieldCfg.type ||  'NoType',
                 funcName = 'render' + type.toUpperCase().substr(0, 1) + type.substr(1),
@@ -29,7 +33,7 @@
             }
             var $label;
             if (fieldCfg.text) {
-                $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}))
+                $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}));
                 $el.prepend($label);
             }
             $el.addClass('dnd-com-config-field');
@@ -37,12 +41,12 @@
             fieldCfg.cssStyle && $el.css(fieldCfg.cssStyle);
             return $el;
         },
-        
+
         renderEnum: function (fieldCfg) {
             var display = fieldCfg.display,
                 $el = $('<div>');
             var id = "dnd-com-field-enum-" + fieldCfg.name;
-                
+
             if (display === 'dropMenu') {
                 var $select = $('<select>');
                 $select.attr('name', fieldCfg.name);
@@ -61,24 +65,22 @@
             }
             return $el;
         },
-        
-        
+
+
         /**
          * 渲染Number
          */
         renderNumber: function (fieldCfg) {
-            var display = fieldCfg.display,
-                $el = $('<div>'),
+            var $el = $('<div>'),
                 $num = $('<input type="number">').attr('id', fieldCfg.id);
             $num.val(fieldCfg.default || 0);
             $el.append($num);
             return $el;
         },
-        
-        
+
+
         renderCombined: function (fieldCfg) {
-            var display = fieldCfg.display,
-                $el = $('<div>'),
+            var $el = $('<div>'),
                 that = this;
             _.each(fieldCfg.items, function (field) {
                 field.cssStyle = {
@@ -88,8 +90,8 @@
             });
             return $el;
         },
-        
-        
+
+
         renderNoType: function (fieldCfg) {
             var that = this,
                 $el = $('<div>');

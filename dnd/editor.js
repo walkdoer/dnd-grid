@@ -34,6 +34,8 @@
             this.counter = {};
             //缓存每一个组件的配置视图
             this.configViewCache = {};
+            //priview的tpl
+            this.previewTpl = options.previewTpl;
         },
 
 
@@ -75,22 +77,33 @@
          * 渲染侧边工具栏
          */
         _renderSideBar: function () {
-            var sidebarTpl = $('#tpl-sidebar').html(),
+            var sidebarTpl = '<div class="editor-sidebar"><ul class="components"></ul></div>',
+                leafTpl = '<li>\
+                    <div class="com-drag" data-size="<%=size%>" data-type="<%=type%>">\
+                        <p class="menu-text"><%= title %></p>\
+                    </div>\
+                </li>',
                 $sidebar = $(_.template(sidebarTpl, {}));
 
             this.$el.append((this.$sidebar = $sidebar));
-            var $comsContainer = $sidebar.find('.components');
-            var menu = new Menu({
-                leafTpl: $('#tpl-menu-item').html(),
-                tree: {
+            var $comsContainer = $sidebar.find('.components'),
+                menuCfg = {
+                    leafTpl: leafTpl
+                };
+            if (typeof this.components === 'string') {
+                menuCfg.remote = true;
+                menuCfg.api = this.components;
+            } else {
+                menuCfg.tree = {
                     title: '组件菜单',
                     root: true,
                     childNodes: this.components
-                }
-            }).render();
+                };
+            }
+            var menu = new Menu(menuCfg).render();
             $comsContainer.append(menu.$el);
 
-            var comPreviewTpl = $('#tpl-com-preview').html();
+            var comPreviewTpl = this.previewTpl;
             menu.$('.com-drag').each(function (i, com) {
                 var $com = $(com);
                 $com.append($(_.template(comPreviewTpl, {
@@ -98,7 +111,6 @@
                     size: $com.data('size'),
                     title: $com.find('.menu-text').html()
                 })));
-
             });
         },
 
@@ -203,15 +215,15 @@
             $drag.attr('id', cfg.id)
                  .attr('data-width', widthPercentage + '%');
             this.leftSpace[parentId] -= widthSpace;
-            
+
             //点击删除按钮
-            $drag.on('click', '.close', function () {
+            $drag.on('click', '.editor-btn-close', function () {
                 $drag.remove();
                 editor.leftSpace[parentId]+= widthSpace;
             });
-            
+
             //点击config按钮
-            $drag.on('click', '.config', function () {
+            $drag.on('click', '.editor-btn-config', function () {
                 var cfgData = editor.configData,
                     configViewCache = editor.configViewCache,
                     configView;
@@ -222,7 +234,7 @@
                 } else {
                     configView.$el.show();
                 }
-                
+
             });
         },
         /**

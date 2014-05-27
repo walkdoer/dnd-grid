@@ -1,3 +1,7 @@
+/**
+ * Menu
+ * Backbone菜单组件
+ */
 (function (window, undefined) {
     'use strict';
 
@@ -18,13 +22,12 @@
                     $li = $(_.template(nodeTpl, node));
                     $li.append(renderMenuTree(node, nodeTpl, leafTpl));
                 }
-                $li.addClass('sub-menu-toggle');
                 $ul.append($li);
             });
         }
         return $ul;
     }
-    var defaultNodeTpl = '<li><p class="menu-text"><%= title %></p></li>'
+    var defaultNodeTpl = '<li><p class="sub-menu-toggle menu-text"><%= title %></p></li>';
 
     var Menu = Backbone.View.extend({
         nodeTpl: defaultNodeTpl,
@@ -56,7 +59,7 @@
 
         _bindEvent: function () {
             this.$el.on('click', '.sub-menu-toggle', function (e) {
-                var $menuNode = $(e.currentTarget),
+                var $menuNode = $(e.currentTarget).closest('li'),
                     $subMenu = $menuNode.find('>.sub-menu');
 
                 $subMenu.toggle();
