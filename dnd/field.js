@@ -21,9 +21,16 @@
         renderField: function (fieldCfg) {
             var type = fieldCfg.type,
                 funcName = 'render' + type.toUpperCase().substr(0, 1) + type.substr(1),
+                id = 'dnd-com-field-' + type + '-' + fieldCfg.name,
                 $el;
+            fieldCfg.id = id;
             if (this[funcName]) {
                 $el = this[funcName](fieldCfg);
+            }
+            var $label;
+            if (fieldCfg.text) {
+                $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}))
+                $el.prepend($label);
             }
             $el.addClass('dnd-com-config-field');
             $el.attr('data-name', fieldCfg.name);
@@ -33,8 +40,8 @@
         renderEnum: function (fieldCfg) {
             var display = fieldCfg.display,
                 $el = $('<div>');
-            var id = "dnd-com-field-enum-" + fieldCfg.name,
-                $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}));
+            var id = "dnd-com-field-enum-" + fieldCfg.name;
+                
             if (display === 'dropMenu') {
                 var $select = $('<select>');
                 $select.attr('name', fieldCfg.name);
@@ -42,12 +49,11 @@
                 _.each(fieldCfg.items, function (option) {
                     $select.append($(_.template(optionTpl, option)));
                 });
-                $el.append([$label, $select]);
+                $el.append($select);
             } else if (display === 'radio') {
-                 $el.append($label);
                  _.each(fieldCfg.items, function (option) {
                     var $radio = $('<input type="radio">'),
-                        $label = $(_.template(labelTpl, {id: '', text: option.text}));
+                        $label = $(_.template('<span><%= text %></span>', {text: option.text}));
                     $radio.attr('name', fieldCfg.name);
                     $el.append([$radio, $label]);
                 });
@@ -61,44 +67,21 @@
          */
         renderNumber: function (fieldCfg) {
             var display = fieldCfg.display,
-                $el = $('<div>');
-            var id = "dnd-com-field-number-" + fieldCfg.name,
-                $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text})),
-                $num = $('<input type="number">').attr('id', id);
+                $el = $('<div>'),
+                $num = $('<input type="number">').attr('id', fieldCfg.id);
             $num.val(fieldCfg.default || 0);
-            $el.append([$label, $num]);
+            $el.append($num);
             return $el;
         },
         
         
         renderCombined: function (fieldCfg) {
             var display = fieldCfg.display,
-                $el = $('<div>');
-            var id = "dnd-com-field-combined-" + fieldCfg.name,
-                that = this,
-                $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}));
-            $el.append($label);    
+                $el = $('<div>'),
+                that = this;
             _.each(fieldCfg.items, function (field) {
                 $el.append(that.renderField(field));
             });
-            return $el;
-        },
-
-
-        /**
-         * 渲染列表
-         */
-        renderList: function (fieldCfg) {
-            var display = fieldCfg.display,
-                $el = $('<div>');
-            var id = "dnd-com-field-list-" + fieldCfg.name,
-                $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}));
-                
-            _.each(fieldCfg.items, function (option) {
-                
-            });
-            
-            $el.append($label);
             return $el;
         }
     });

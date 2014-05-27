@@ -177,3 +177,9 @@
 .dnd-com-config-field{
 	padding: 10px;
 }
+.dnd-com-config-field label{
+	margin-right: 10px;
+}
+.dnd-com-config-field label:after{
+	content: ":"
+}
