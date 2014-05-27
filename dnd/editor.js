@@ -32,6 +32,8 @@
             this.configData = options.cfg;
             this.widthPercent = (100 - this.comSpace * (this.colNum - 1)) / this.colNum;
             this.counter = {};
+            //缓存每一个组件的配置视图
+            this.configViewCache = {};
         },
 
 
@@ -186,6 +188,7 @@
             var sizeCfgStr = $drag.attr('data-size'),
                 editor = this,
                 parentId = cfg.parentId,
+                cacheId = parentId + cfg.id,
                 widthSpace = this.getSizeCfg(sizeCfgStr).width,
                 size = this.getSize(sizeCfgStr),
                 widthPercentage = this.getWidthPercentage(sizeCfgStr),
@@ -209,10 +212,17 @@
             
             //点击config按钮
             $drag.on('click', '.config', function () {
-                var cfgData = editor.configData;
-                var config = new DnDEditorConfig(cfgData);
+                var cfgData = editor.configData,
+                    configViewCache = editor.configViewCache,
+                    configView;
                 $drag.find('.com-preview-con').toggle();
-                $drag.append(config.render().$el);
+                if (!(configView = configViewCache[cacheId])) {
+                    configViewCache[cacheId] = configView = new DnDEditorConfig(cfgData);
+                    $drag.append(configView.$el);
+                } else {
+                    configView.$el.show();
+                }
+                
             });
         },
         /**
