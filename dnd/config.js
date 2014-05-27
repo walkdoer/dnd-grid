@@ -6,22 +6,22 @@
             <button type="button" class="cancel">取消</button>\
         </div>';
     var DnDEditorConfig = Backbone.View.extend({
-        
+
         initialize: function (options) {
             var $cfg = $(tpl),
                  $con = $cfg.find('.dnd-com-config-con');
-             
+
              _.each(options, function (field) {
                  var field = new DnDEditorField(field);
                  $con.append(field.render().$el);
              });
-             
+
              //点击确定，保存配置
              $cfg.on('click', '.confirm', function () {
                  $cfg.hide();
                  //todo save
              });
-             
+
              //点击取消，关闭配置界面
              $cfg.on('click', '.cancel', function () {
                  $cfg.hide();

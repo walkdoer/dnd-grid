@@ -11,11 +11,9 @@
 
     items: [{
         text: "PV",
-        name: "pv",
         value: "p"
     }, {
         text: "UV",
-        name: "uv",
         value: "u"
     }]
 }
