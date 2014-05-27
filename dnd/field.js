@@ -19,7 +19,7 @@
         },
         
         renderField: function (fieldCfg) {
-            var type = fieldCfg.type,
+            var type = fieldCfg.type ||  'NoType',
                 funcName = 'render' + type.toUpperCase().substr(0, 1) + type.substr(1),
                 id = 'dnd-com-field-' + type + '-' + fieldCfg.name,
                 $el;
@@ -34,6 +34,7 @@
             }
             $el.addClass('dnd-com-config-field');
             $el.attr('data-name', fieldCfg.name);
+            fieldCfg.cssStyle && $el.css(fieldCfg.cssStyle);
             return $el;
         },
         
@@ -79,6 +80,19 @@
             var display = fieldCfg.display,
                 $el = $('<div>'),
                 that = this;
+            _.each(fieldCfg.items, function (field) {
+                field.cssStyle = {
+                    'display': 'inline-block'
+                };
+                $el.append(that.renderField(field));
+            });
+            return $el;
+        },
+        
+        
+        renderNoType: function (fieldCfg) {
+            var that = this,
+                $el = $('<div>');
             _.each(fieldCfg.items, function (field) {
                 $el.append(that.renderField(field));
             });

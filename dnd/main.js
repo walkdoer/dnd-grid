@@ -68,8 +68,6 @@
             }, {
                 name: 'filter',
                 text: '过滤条件',
-                display: 'list',
-                type: 'combined',
                 default: {
                     pv_uv: {
                         operator: 'equal',
@@ -99,6 +97,33 @@
                         type: 'number',
                         name: 'value',
                         default: 0
+                    }]
+                }, {
+                    name: '频率',
+                    text: 'pl',
+                    type: 'combined',
+                    items: [{
+                        name: 'operator',
+                        type: 'enum',
+                        display: 'dropMenu',
+                        items: [{
+                            text: '大于',
+                            value: 'bt'
+                        }, {
+                            text: '等于',
+                            value: 'equal'
+                        }]
+                    }, {
+                        name: 'value',
+                        type: 'enum',
+                        display: 'dropMenu',
+                        items: [{
+                            text: '100MHZ',
+                            value: '100'
+                        }, {
+                            text: '1000MHZ',
+                            value: '1000'
+                        }]
                     }]
                 }]
             }]
