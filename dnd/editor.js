@@ -78,6 +78,7 @@
          */
         _renderSideBar: function () {
             var sidebarTpl = '<div class="editor-sidebar"><ul class="components"></ul></div>',
+                that = this,
                 leafTpl = '<li>\
                     <div class="com-drag" data-size="<%=size%>" data-type="<%=type%>">\
                         <p class="menu-text"><%= title %></p>\
@@ -101,16 +102,19 @@
                 };
             }
             var menu = new Menu(menuCfg).render();
-            $comsContainer.append(menu.$el);
 
-            var comPreviewTpl = this.previewTpl;
-            menu.$('.com-drag').each(function (i, com) {
-                var $com = $(com);
-                $com.append($(_.template(comPreviewTpl, {
-                    type: $com.data('type'),
-                    size: $com.data('size'),
-                    title: $com.find('.menu-text').html()
-                })));
+            $comsContainer.append(menu.$el);
+            menu.on('rendered', function () {
+                var comPreviewTpl = that.previewTpl;
+                this.$('.com-drag').each(function (i, com) {
+                    var $com = $(com);
+                    $com.append($(_.template(comPreviewTpl, {
+                        type: $com.data('type'),
+                        size: $com.data('size'),
+                        title: $com.find('.menu-text').html()
+                    })));
+                });
+                that._initDrag();
             });
         },
 
@@ -188,7 +192,6 @@
                     that.rendered = true;
                     that._initDnd();
                 });
-                
             }
         },
 
@@ -206,7 +209,6 @@
                 widthPercentage = this.getWidthPercentage(sizeCfgStr),
                 //补充元素宽度
                 addUp = (widthSpace - 1) * this.comSpace;
-                
             $drag.css({
                 height: size.height,
                 width: widthPercentage + addUp + '%'
@@ -237,24 +239,15 @@
 
             });
         },
+
+
         /**
          * 初始化拖拽
          * init drag and drop
          */
-        _initDnd: function () {
+        _initDrop: function () {
             var editor = this,
                 leftSpace = this.leftSpace;
-            this.$sidebar.find('.com-drag').draggable({
-                opacity: this.opacity,
-                cursor: 'move',
-                helper: function () {
-                    var $com = $(this),
-                        $view = $com.find('.com-preview').clone(),
-                        size = editor.getSize($view.data('size'));
-                    $view.css(size);
-                    return $view;
-                }
-            });
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
@@ -304,6 +297,29 @@
             });
         },
 
+
+        _initDnd: function () {
+            this._initDrag();
+            this._initDrop();
+        },
+
+        /**
+         * init Drag
+         */
+        _initDrag: function () {
+            var editor = this;
+            this.$sidebar.find('.com-drag').draggable({
+                opacity: this.opacity,
+                cursor: 'move',
+                helper: function () {
+                    var $com = $(this),
+                        $view = $com.find('.com-preview').clone(),
+                        size = editor.getSize($view.data('size'));
+                    $view.css(size);
+                    return $view;
+                }
+            });
+        },
 
         /**
          * load
