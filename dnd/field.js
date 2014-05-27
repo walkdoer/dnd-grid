@@ -11,16 +11,21 @@
         },
 
         render: function () {
-            this.setElement(this.renderType());
+            var $el = this.renderField(this.options);
+            if ($el) {
+                this.setElement($el);
+            }
             return this;
         },
         
-        renderType: function (type) {
-            var funcName = 'render' + type.toUpperCase().substr(0, 1) + type.substr(1),
+        renderField: function (fieldCfg) {
+            var type = fieldCfg.type,
+                funcName = 'render' + type.toUpperCase().substr(0, 1) + type.substr(1),
                 $el;
             if (this[funcName]) {
-                $el = this[funcName](this.options);
+                $el = this[funcName](fieldCfg);
             }
+            return $el;
         },
         
         renderEnum: function (fieldCfg) {
@@ -68,10 +73,11 @@
             var display = fieldCfg.display,
                 $el = $('<div>');
             var id = "dnd-com-field-combined" + fieldCfg.name,
+                that = this,
                 $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}));
-                
-            _.each(fieldCfg.items, function (option) {
-                
+            $el.append($label);    
+            _.each(fieldCfg.items, function (field) {
+                $el.append(that.renderField(field));
             });
             return $el;
         },
