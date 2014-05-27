@@ -25,13 +25,15 @@
             if (this[funcName]) {
                 $el = this[funcName](fieldCfg);
             }
+            $el.addClass('dnd-com-config-field');
+            $el.attr('data-name', fieldCfg.name);
             return $el;
         },
         
         renderEnum: function (fieldCfg) {
             var display = fieldCfg.display,
                 $el = $('<div>');
-            var id = "dnd-com-field-enum" + fieldCfg.name,
+            var id = "dnd-com-field-enum-" + fieldCfg.name,
                 $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}));
             if (display === 'dropMenu') {
                 var $select = $('<select>');
@@ -60,7 +62,7 @@
         renderNumber: function (fieldCfg) {
             var display = fieldCfg.display,
                 $el = $('<div>');
-            var id = "dnd-com-field-number" + fieldCfg.name,
+            var id = "dnd-com-field-number-" + fieldCfg.name,
                 $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text})),
                 $num = $('<input type="number">').attr('id', id);
             $num.val(fieldCfg.default || 0);
@@ -72,7 +74,7 @@
         renderCombined: function (fieldCfg) {
             var display = fieldCfg.display,
                 $el = $('<div>');
-            var id = "dnd-com-field-combined" + fieldCfg.name,
+            var id = "dnd-com-field-combined-" + fieldCfg.name,
                 that = this,
                 $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}));
             $el.append($label);    
@@ -89,7 +91,7 @@
         renderList: function (fieldCfg) {
             var display = fieldCfg.display,
                 $el = $('<div>');
-            var id = "dnd-com-field-list" + fieldCfg.name,
+            var id = "dnd-com-field-list-" + fieldCfg.name,
                 $label = $(_.template(labelTpl, {id: id, text: fieldCfg.text}));
                 
             _.each(fieldCfg.items, function (option) {

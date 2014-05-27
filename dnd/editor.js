@@ -210,8 +210,9 @@
             //点击config按钮
             $drag.on('click', '.config', function () {
                 var cfgData = editor.configData;
-                var $config = editor.renderComConfig(cfgData);
-                $drag.append($config);
+                var config = new DnDEditorConfig(cfgData);
+                $drag.find('.com-preview-con').toggle();
+                $drag.append(config.render().$el);
             });
         },
         /**
@@ -391,20 +392,7 @@
         getWidthPercentage: function (cfgStr) {
             var sizeCfg = this.getSizeCfg(cfgStr);
             return this.widthPercent * sizeCfg.width;
-        },
-        
-        
-        /**
-         * 渲染配置数据
-         */
-         renderComConfig: function (cfgData) {
-             var $con = $('<div>');
-             _.each(cfgData, function (field) {
-                 var field = new DnDEditorField(field);
-                 $con.append(field.render().$el);
-             });
-             return $con;
-         }
+        }
     });
 
     window.DnDEditor = Editor;

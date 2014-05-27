@@ -87,7 +87,7 @@
                     items: [{
                         name: 'operator',
                         type: 'enum',
-                        display: 'dropmenu',
+                        display: 'dropMenu',
                         items: [{
                             text: '大于',
                             value: 'bt'
