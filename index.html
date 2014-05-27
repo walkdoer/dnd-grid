@@ -35,7 +35,11 @@
 
     <script id="tpl-com-preview" type="text/template">
         <div class="com-preview" data-size="<%=size%>" data-type="<%=type%>">
-            <header><span class="title"><%= title %></span><span class="com-h-btn close red-btn">delete</span></header>
+            <header>
+                <span class="title"><%= title %></span>
+                <span class="com-h-btn close red-btn">delete</span>
+                <span class="com-h-btn config green-btn">config</span>
+            </header>
             <div class="com-preview-con"></div>
         </div>
     </script>

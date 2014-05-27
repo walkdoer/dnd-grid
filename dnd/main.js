@@ -11,13 +11,24 @@
             components: [
                 {
                     title: '用户流量',
+                    hidden: true,
                     childNodes: [
-                        {type: 'pie', size: '1*1', title: '饼图'},
+                        {
+                            type: 'pie',
+                            size: '1*1',
+                            title: '饼图',
+                            childNodes: [
+                                {type: 'pie', size: '1*1', title: '饼图'},
+                                {type: 'trend', size: '2*1', title: '趋势'},
+                                {type: 'report', size: '3*1.5', title: '报表'}
+                            ]
+                        },
                         {type: 'trend', size: '2*1', title: '趋势'},
                         {type: 'report', size: '3*1.5', title: '报表'}
                     ]
                 }, {
                     title: '统计分析',
+                    disabled: true,
                     childNodes: [
                         {type: 'pie', size: '1*1', title: '饼图'},
                         {type: 'trend', size: '2*1', title: '趋势'},
@@ -26,8 +37,8 @@
                 }, {
                     title: '点击区域统计',
                     childNodes: [
-                        {type: 'pie', size: '1*1', title: '饼图'},
-                        {type: 'trend', size: '2*1', title: '趋势'},
+                        {type: 'pie', size: '1*1', title: '饼图', disabled: true,},
+                        {type: 'trend', size: '2*1', title: '趋势', hidden: true},
                         {type: 'report', size: '3*1.5', title: '报表'}
                     ]
                 }

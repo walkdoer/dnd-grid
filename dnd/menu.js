@@ -57,7 +57,7 @@
         _bindEvent: function () {
             this.$el.on('click', '.sub-menu-toggle', function (e) {
                 var $menuNode = $(e.currentTarget),
-                    $subMenu = $menuNode.find('.sub-menu');
+                    $subMenu = $menuNode.find('>.sub-menu');
 
                 $subMenu.toggle();
             });

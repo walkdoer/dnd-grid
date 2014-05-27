@@ -6,6 +6,10 @@
 	color:#fff;
 	background:#953b39;
 }
+.green-btn{
+	color:#fff;
+	background: #1B6AA6;
+}
 
 
 
@@ -108,7 +112,7 @@
 .com-preview .com-h-btn {
 }
 
-.com-preview .close{
+.com-preview .close, .com-preview .config{
 	float: right;
 	padding: 3px 6px;
 	margin: 3px;
