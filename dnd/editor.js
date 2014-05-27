@@ -29,6 +29,7 @@
             this.storage = options.storage;
             this.leftSpace = {};
             this.comSpace = options.comSpace;
+            this.configData = options.cfg;
             this.widthPercent = (100 - this.comSpace * (this.colNum - 1)) / this.colNum;
             this.counter = {};
         },
@@ -199,13 +200,23 @@
             $drag.attr('id', cfg.id)
                  .attr('data-width', widthPercentage + '%');
             this.leftSpace[parentId] -= widthSpace;
+            
+            //点击删除按钮
             $drag.on('click', '.close', function () {
                 $drag.remove();
                 editor.leftSpace[parentId]+= widthSpace;
             });
+            
+            //点击config按钮
+            $drag.on('click', '.config', function () {
+                var cfgData = editor.configData;
+                var $config = editor.renderComConfig(cfgData);
+                $drag.append($config);
+            });
         },
         /**
          * 初始化拖拽
+         * init drag and drop
          */
         _initDnd: function () {
             var editor = this,
@@ -380,7 +391,20 @@
         getWidthPercentage: function (cfgStr) {
             var sizeCfg = this.getSizeCfg(cfgStr);
             return this.widthPercent * sizeCfg.width;
-        }
+        },
+        
+        
+        /**
+         * 渲染配置数据
+         */
+         renderComConfig: function (cfgData) {
+             var $con = $('<div>');
+             _.each(cfgData, function (field) {
+                 var field = new DnDEditorField(field);
+                 $con.append(field.render().$el);
+             });
+             return $con;
+         }
     });
 
     window.DnDEditor = Editor;

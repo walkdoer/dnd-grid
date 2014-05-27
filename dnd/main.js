@@ -42,7 +42,66 @@
                         {type: 'report', size: '3*1.5', title: '报表'}
                     ]
                 }
-            ]
+            ],
+            cfg: [{
+                //类型 enum/number/string
+                type: "enum",
+                //展现形式 ratio/dropmenu/list
+                display: "radio",
+                //字段显示名称
+                text: "PV/UV",
+                //字段名称，对应于数据库字段
+                name: "indicator",
+
+                items: [{
+                    text: "PV",
+                    value: "p"
+                }, {
+                    text: "UV",
+                    value: "u"
+                }]
+            }, {
+                type: "number",
+                text: "Top N",
+                name: "topN",
+                default: 5
+            }, {
+                name: 'filter',
+                text: '过滤条件',
+                display: 'list',
+                type: 'combined',
+                default: {
+                    pv_uv: {
+                        operator: 'equal',
+                        value: '10'
+                    },
+                    example: {
+                        operator: 'lt',
+                        value: 100
+                    }
+                },
+                items: [{
+                    name: 'pv',
+                    text: 'PV',
+                    type: 'combined',
+                    items: [{
+                        name: 'operator',
+                        type: 'enum',
+                        display: 'dropmenu',
+                        items: [{
+                            text: '大于',
+                            value: 'bt'
+                        }, {
+                            text: '等于',
+                            value: 'equal'
+                        }]
+                    }, {
+                        type: 'number',
+                        name: 'value',
+                        default: 0
+                    }]
+                }]
+            }]
         });
 
 
