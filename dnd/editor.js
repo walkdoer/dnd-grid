@@ -74,6 +74,25 @@
 
 
         /**
+         * 渲染工具栏
+         */
+        _createButtons: function () {
+            var editor = this,
+                $toolbar = $('<header class="dnd-toolbar">'),
+                btnTpl = '<button class="dnd-btn dnd-btn-<%= name %>"><%= name %></button>';
+            this.buttons = [{name: 'save'}];
+            _.each(this.buttons, function (btn) {
+                $toolbar.append(_.template(btnTpl, btn));
+            });
+
+            $toolbar.on('click', '.dnd-btn-save', function () {
+                editor.save();
+            });
+            return $toolbar;
+        },
+
+
+        /**
          * 渲染侧边工具栏
          */
         _renderSideBar: function () {
@@ -164,8 +183,8 @@
             //添加Workspace
             var $workspace;
             this.$workspace = $workspace = $('<div class="workspace">');
+            $workspace.append(this._createButtons());
             this.$el.append($workspace);
-
             var colNum = this.colNum,
                 leftSpace = this.leftSpace,
                 that = this,
