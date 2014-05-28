@@ -5,6 +5,7 @@
         Global Config
     ------------------*/
     var COLNUM = 3,
+        EMPTY_FUN = function () {},
         OPACITY = 0.35;
 
 
@@ -14,6 +15,7 @@
     function id(idStr) {
         return '#' + idStr;
     }
+
 
     /**
      * 界面编辑器
@@ -36,6 +38,10 @@
             this.configViewCache = {};
             //priview的tpl
             this.previewTpl = options.previewTpl;
+            //记录编辑器状态
+            this.status = {};
+            //缓存配置
+            this.listeners = options.listeners || {};
         },
 
 
@@ -43,10 +49,21 @@
          * 渲染界面
          */
         render: function () {
+            var that = this;
             this._renderSideBar();
-            var editData = this.load();
-            this._renderWorkSpace(editData);
+            this.$el.append(this.$loadingView = $('<div class="dnd-editor-loading"></div>'));
+            this._setStatus('loading', true);
+            this.load(function (editData) {
+                that._setStatus('loading', false);
+                that._renderWorkSpace(editData);
+            });
             return this;
+        },
+
+
+        _setStatus: function (type, value) {
+            this.status[type] = value;
+            this['$' + type + 'View'][value ? 'show' : 'hide'](value);
         },
 
 
@@ -105,7 +122,8 @@
             this.$el.append((this.$sidebar = $sidebar));
             var $comsContainer = $sidebar.find('.components'),
                 menuCfg = {
-                    leafTpl: leafTpl
+                    leafTpl: leafTpl,
+                    nodeTpl: '<li data-key="<%=statKey%>"><p class="sub-menu-toggle menu-text"><%= title %></p></li>'
                 };
             if (typeof this.components === 'string') {
                 menuCfg.remote = true;
@@ -255,6 +273,8 @@
                 }
 
             });
+            cfg.height = size.height;
+            this.trigger('dropped', $drag, cfg);
         },
 
 
@@ -264,7 +284,8 @@
          */
         _initDrop: function () {
             var editor = this,
-                leftSpace = this.leftSpace;
+                leftSpace = this.leftSpace,
+                beforeDrop = this.listeners.beforeDrop || EMPTY_FUN;
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
@@ -286,14 +307,16 @@
                         type = $dragClone.data('type'),
                         size = editor.getSize(sizeCfgStr),
                         widthPercentage = editor.getWidthPercentage(sizeCfgStr);
-                    editor._dropCom($dragClone, {
+                    var cfg = {
                         width: widthPercentage + '%',
                         height: size.height,
                         className: type,
                         type: type,
                         id: editor.idGen(type),
                         parentId: that.id
-                    });
+                    };
+                    cfg = beforeDrop.call(this, e, ui, $dragClone, cfg);
+                    editor._dropCom($dragClone, cfg);
                     $column.append($dragClone);
                 }
             });
@@ -315,16 +338,21 @@
         },
 
 
+        /**
+         * 初始化drag and drop
+         */
         _initDnd: function () {
             this._initDrag();
             this._initDrop();
         },
 
+
         /**
          * init Drag
          */
         _initDrag: function () {
-            var editor = this;
+            var editor = this,
+                beforeDrag = this.listeners.beforeDrag || EMPTY_FUN;
             this.$sidebar.find('.com-drag').draggable({
                 opacity: this.opacity,
                 cursor: 'move',
@@ -333,17 +361,24 @@
                         $view = $com.find('.com-preview').clone(),
                         size = editor.getSize($view.data('size'));
                     $view.css(size);
+                    beforeDrag.call(this, $view);
                     return $view;
                 }
             });
         },
 
+
         /**
          * load
          * 加载用户的配置
          */
-        load: function () {
-            return JSON.parse(localStorage.getItem(this.storage));
+        load: function (callback) {
+            var editData = JSON.parse(localStorage.getItem(this.storage));
+            var timer = setTimeout(function () {
+                callback(editData);
+                //todo remote load config
+                clearTimeout(timer);
+            }, 400);
         },
 
 
@@ -367,6 +402,7 @@
                             sectionCfg.tag = 'item';
                             sectionCfg.className = type;
                             sectionCfg.type = type;
+                            sectionCfg.statKey = $section.data('statKey');
                             sectionCfg.title = $section.find('.title').html();
                         }
                         sectionCfg.width = $section.data('width');
