@@ -56,9 +56,6 @@
          */
         show: function () {
             this.$el.show();
-            if (!this.itemWidth) {
-                this.itemWidth = this.$workspace.width() / this.colNum;
-            }
             this.trigger('aftershow');
         },
 
@@ -143,7 +140,7 @@
          */
         _renderEditData: function (editData) {
             var editor = this,
-                template = $('#tpl-com-preview').html(),
+                template = this.previewTpl,
                 renderFromEditData = function(config, parent) {
                     var $div,
                         $parent;
@@ -161,7 +158,7 @@
                         }
                     }
                     $parent = $div;
-                  
+
                     var children = config.children;
                     if (children && children.length > 0) {
                         _.each(children, function (child) {
@@ -185,33 +182,34 @@
             this.$workspace = $workspace = $('<div class="workspace">');
             $workspace.append(this._createButtons());
             this.$el.append($workspace);
-            var colNum = this.colNum,
-                leftSpace = this.leftSpace,
-                that = this,
-                $container;
 
             if (!editData || !editData.children || !editData.children.length) {
                 //初始化 Horizon容器
-                $container = $('<div class="horizon-container clearfix">');
-                for (var i = 0; i < colNum; i++) {
-                    var $item = $('<div class="drop-area horizon clearfix"></div>');
-                    var id = this.idGen('dnd-drop-area');
-                    $item.attr('id', id);
-                    leftSpace[id] = colNum;
-                    $container.append($item);
-                }
-                $workspace.append($container);
-                this._initDnd();
+                this._initWorkSpace($workspace);
             } else {
                 //根据用户数据渲染编辑器
-                this.on('aftershow', function () {
-                    if (that.rendered) { return; }
-                    var $result = that._renderEditData(editData);
-                    $workspace.append($result);
-                    that.rendered = true;
-                    that._initDnd();
-                });
+                var $result = this._renderEditData(editData);
+                $workspace.append($result);
+                this._initDnd();
             }
+        },
+
+
+
+        _initWorkSpace: function($workspace) {
+            var colNum = this.colNum,
+                leftSpace = this.leftSpace,
+                $container;
+            $container = $('<div class="horizon-container clearfix">');
+            for (var i = 0; i < colNum; i++) {
+                var $item = $('<div class="drop-area horizon clearfix"></div>');
+                var id = this.idGen('dnd-drop-area');
+                $item.attr('id', id);
+                leftSpace[id] = colNum;
+                $container.append($item);
+            }
+            $workspace.append($container);
+            this._initDnd();
         },
 
 
@@ -430,7 +428,7 @@
          */
         getSize: function (cfgStr) {
             var sizeCfg = this.getSizeCfg(cfgStr),
-                itemWidth = this.itemWidth,
+                itemWidth = this._getItemWidth(),
                 width,
                 height;
 
@@ -449,6 +447,17 @@
         getWidthPercentage: function (cfgStr) {
             var sizeCfg = this.getSizeCfg(cfgStr);
             return this.widthPercent * sizeCfg.width;
+        },
+
+
+        /**
+         * 获取拖拽组件的宽度
+         */
+        _getItemWidth: function () {
+            if (this.itemWidth === undefined) {
+                this.itemWidth = this.$workspace.width() / this.colNum;
+            }
+            return this.itemWidth;
         }
     });
 
