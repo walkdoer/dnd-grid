@@ -145,7 +145,8 @@
                     $com.append($(_.template(comPreviewTpl, {
                         type: $com.data('type'),
                         size: $com.data('size'),
-                        title: $com.find('.menu-text').html()
+                        title: $com.find('.menu-text').html(),
+                        parentTitle: $com.closest('ul').parent().find('>.menu-text').text()
                     })));
                 });
                 that._initDrag();
@@ -234,7 +235,9 @@
         /**
          * 将拖拽元件放入drop area中
          */
-        _dropCom: function ($drag, cfg) {
+        _dropCom: function ($drag, cfg, ui) {
+            var beforeDrop = this.listeners.beforeDrop || EMPTY_FUN;
+            cfg = beforeDrop.call(this, $drag, cfg, ui);
             var sizeCfgStr = $drag.attr('data-size'),
                 editor = this,
                 parentId = cfg.parentId,
@@ -284,8 +287,7 @@
          */
         _initDrop: function () {
             var editor = this,
-                leftSpace = this.leftSpace,
-                beforeDrop = this.listeners.beforeDrop || EMPTY_FUN;
+                leftSpace = this.leftSpace;
             this.$workspace.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
@@ -315,8 +317,7 @@
                         id: editor.idGen(type),
                         parentId: that.id
                     };
-                    cfg = beforeDrop.call(this, e, ui, $dragClone, cfg);
-                    editor._dropCom($dragClone, cfg);
+                    editor._dropCom($dragClone, cfg, ui);
                     $column.append($dragClone);
                 }
             });
@@ -388,6 +389,7 @@
          */
         getData: function () {
             var result = {},
+                beforeSave = this.listeners.beforeSave || EMPTY_FUN,
                 getCfgFromSortable = function ($sortable) {
                     var data = [],
                         sectionArr = $sortable.sortable('toArray');
@@ -407,6 +409,7 @@
                         }
                         sectionCfg.width = $section.data('width');
                         sectionCfg.size = $section.data('size');
+                        sectionCfg = beforeSave.call($section, sectionCfg);
                         data.push(sectionCfg);
                     });
                     return data;
