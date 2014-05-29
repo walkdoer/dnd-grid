@@ -288,7 +288,8 @@
         _initDrop: function () {
             var editor = this,
                 leftSpace = this.leftSpace;
-            this.$workspace.find('.drop-area').droppable({
+            var dropAreaSelector = '.drop-area';
+            this.$workspace.find(dropAreaSelector).droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
                     var sizeCfg = editor.getSizeCfg(draggable.find('.com-preview').attr('data-size')),
@@ -324,6 +325,18 @@
             this.$workspace.find('.drop-area.horizon').sortable({
                 axis: 'x',
                 handle: 'header',
+                connectWith: '.drop-area.horizon',
+                //只有有剩下空间才可以移动
+                over : function (e, ui) {
+                    var sizeCfg = editor.getSizeCfg(ui.helper.attr('data-size'));
+                    if (!sizeCfg || leftSpace[this.id] < sizeCfg.width) {
+                        ui.sender.sortable('cancel');
+                    }
+                },
+                remove: function (e, ui) {
+                    var sizeCfg = editor.getSizeCfg(ui.helper.attr('data-size'));
+                    leftSpace[this.id] -= sizeCfg;
+                },
                 forceHelperSize: true,
                 forcePlaceholderSize: true,
                 cursor: 'move',
