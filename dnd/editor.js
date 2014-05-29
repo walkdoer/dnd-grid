@@ -110,7 +110,7 @@
          * 渲染侧边工具栏
          */
         _renderSideBar: function () {
-            var sidebarTpl = '<div class="editor-sidebar"><ul class="components"></ul></div>',
+            var sidebarTpl = '<div class="dnd-editor-sidebar"><ul class="components"></ul></div>',
                 that = this,
                 leafTpl = '<li>\
                     <div class="com-drag" data-size="<%=size%>" data-type="<%=type%>">\
@@ -198,7 +198,7 @@
         _renderWorkSpace: function (editData) {
             //添加Workspace
             var $workspace;
-            this.$workspace = $workspace = $('<div class="workspace">');
+            this.$workspace = $workspace = $('<div class="dnd-editor-workspace">');
             $workspace.append(this._createButtons());
             this.$el.append($workspace);
 
@@ -267,7 +267,7 @@
                 var cfgData = editor.configData,
                     configViewCache = editor.configViewCache,
                     configView;
-                $drag.find('.com-preview-con').toggle();
+                $drag.find('.dnd-editor-com-preview-con').toggle();
                 if (!(configView = configViewCache[cacheId])) {
                     configViewCache[cacheId] = configView = new DnDEditorConfig(cfgData);
                     $drag.append(configView.$el);
@@ -292,7 +292,7 @@
             this.$workspace.find(dropAreaSelector).droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
-                    var sizeCfg = editor.getSizeCfg(draggable.find('.com-preview').attr('data-size')),
+                    var sizeCfg = editor.getSizeCfg(draggable.find('.dnd-editor-com-preview').attr('data-size')),
                         needSpace;
                     if (sizeCfg) {
                         needSpace = sizeCfg.width;
@@ -303,7 +303,7 @@
                 },
                 drop: function (e, ui) {
                     var that = this,
-                        $dragClone = $(ui.draggable).find('.com-preview').clone(),
+                        $dragClone = $(ui.draggable).find('.dnd-editor-com-preview').clone(),
                         $column = $(e.target);
 
                     var sizeCfgStr = $dragClone.attr('data-size'),
@@ -384,7 +384,7 @@
                 cursor: 'move',
                 helper: function () {
                     var $com = $(this),
-                        $view = $com.find('.com-preview').clone(),
+                        $view = $com.find('.dnd-editor-com-preview').clone(),
                         size = editor.getSize($view.data('size'));
                     $view.css(size);
                     beforeDrag.call(this, $view);
