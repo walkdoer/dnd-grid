@@ -322,20 +322,32 @@
                     $column.append($dragClone);
                 }
             });
+            var cancel;
             this.$workspace.find('.drop-area.horizon').sortable({
                 axis: 'x',
                 handle: 'header',
                 connectWith: '.drop-area.horizon',
-                //只有有剩下空间才可以移动
                 over : function (e, ui) {
                     var sizeCfg = editor.getSizeCfg(ui.helper.attr('data-size'));
+                    cancel = false;
                     if (!sizeCfg || leftSpace[this.id] < sizeCfg.width) {
                         ui.sender.sortable('cancel');
+                        cancel = true;
                     }
                 },
                 remove: function (e, ui) {
-                    var sizeCfg = editor.getSizeCfg(ui.helper.attr('data-size'));
-                    leftSpace[this.id] -= sizeCfg;
+                    var item = ui.item;
+                    if (item && !cancel) {
+                        var sizeCfg = editor.getSizeCfg(item.attr('data-size'));
+                        leftSpace[this.id] += sizeCfg.width;
+                    }
+                },
+                receive: function (e, ui) {
+                    var item = ui.item;
+                    if (item && !cancel) {
+                        var sizeCfg = editor.getSizeCfg(item.attr('data-size'));
+                        leftSpace[this.id] -= sizeCfg.width;
+                    }
                 },
                 forceHelperSize: true,
                 forcePlaceholderSize: true,
