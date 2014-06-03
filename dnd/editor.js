@@ -23,6 +23,16 @@
     var Editor = Backbone.View.extend({
 
 
+        /**
+         * 初始化配置项
+         *
+         * colNum: 列数
+         * components: 编辑器提供的组件
+         * opacity: 拖动时组件的透明度
+         * panelSpace: 板块之间的距离
+         * cfg
+         * previewTpl 组件预览的模板，拖动是看到的Dom元素
+         */
         initialize: function (options) {
             this.$el.addClass(options.className);
             this.colNum = options.colNum || COLNUM;
@@ -246,24 +256,25 @@
                 size = this.getSize(sizeCfgStr),
                 widthPercentage = this.getWidthPercentage(sizeCfgStr),
                 //补充元素宽度
-                addUp = (widthSpace - 1) * this.comSpace;
+                addUp = (widthSpace - 1) * this.comSpace,
+                totalWidth = widthPercentage + addUp + '%';
             $drag.css({
                 height: size.height,
-                width: widthPercentage + addUp + '%'
+                width: totalWidth
             });
             $drag.addClass(cfg.className);
             $drag.attr('id', cfg.id)
-                 .attr('data-width', widthPercentage + '%');
+                 .attr('data-width', totalWidth);
             this.leftSpace[parentId] -= widthSpace;
 
             //点击删除按钮
-            $drag.on('click', '.editor-btn-close', function () {
+            $drag.on('click', '.dnd-editor-btn-close', function () {
                 $drag.remove();
                 editor.leftSpace[parentId]+= widthSpace;
             });
 
             //点击config按钮
-            $drag.on('click', '.editor-btn-config', function () {
+            $drag.on('click', '.dnd-editor-btn-config', function () {
                 var cfgData = editor.configData,
                     configViewCache = editor.configViewCache,
                     configView;
