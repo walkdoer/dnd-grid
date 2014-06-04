@@ -43,6 +43,9 @@
             if (options.leafTpl) {
                 this.leafTpl = options.leafTpl;
             }
+            if (options.$el) {
+                this.setElement(options.$el);
+            }
             this.menuTree = options.tree;
         },
 
@@ -53,10 +56,14 @@
         render: function () {
             var that = this;
             if (this.remote) {
-                this._loadMenuData(function (tree) {
-                    tree.root = true;
-                    that._renderMenu(tree);
-                });
+                setTimeout(function () {
+                    that.$el.imask();
+                    that._loadMenuData(function (tree) {
+                        that.$el.unimask();
+                        tree.root = true;
+                        that._renderMenu(tree);
+                    });
+                }, 100);
             } else {
                 this._renderMenu(this.menuTree);
             }

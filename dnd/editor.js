@@ -140,7 +140,7 @@
          * 渲染侧边工具栏
          */
         _renderSideBar: function () {
-            var sidebarTpl = '<div class="dnd-editor-sidebar"><ul class="components"></ul></div>',
+            var sidebarTpl = '<div class="dnd-editor-sidebar components"></div>',
                 that = this,
                 leafTpl = '<li>\
                     <div class="com-drag" data-size="<%=size%>" data-type="<%=type%>">\
@@ -150,8 +150,8 @@
                 $sidebar = $(_.template(sidebarTpl, {}));
 
             this.$el.append((this.$sidebar = $sidebar));
-            var $comsContainer = $sidebar.find('.components'),
-                menuCfg = {
+            var menuCfg = {
+                    $el: $sidebar,
                     leafTpl: leafTpl,
                     nodeTpl: '<li data-statkey="<%=statKey%>" data-template="<%=template%>"><p class="sub-menu-toggle menu-text"><%= title %></p></li>'
                 };
@@ -167,7 +167,6 @@
             }
             var menu = new Menu(menuCfg).render();
 
-            $comsContainer.append(menu.$el);
             menu.on('rendered', function () {
                 var comPreviewTpl = that.previewTpl;
                 this.$('.com-drag').each(function (i, com) {
