@@ -233,7 +233,7 @@
             } else {
                 //根据用户数据渲染编辑器
                 var $result = this._renderEditData(editData);
-                this.counter[DROP_AREA_PREFIX] = $result.find('.drop-area').length;
+                this.counter[DROP_AREA_PREFIX] = $result.find('.drop-area').length + 1;
                 $workspace.append($result);
                 this._initDnd();
             }
@@ -276,6 +276,7 @@
             $newRow.attr('id', id);
             leftSpace[id] = this.colNum;
             this._initDrop($newRow);
+            this._initRowSort($newRow);
             $container.append($newRow);
             return $newRow;
         },
@@ -379,15 +380,20 @@
          */
         _initDnd: function () {
             this._initDrag();
-            this._initSort();
+            this._initWorkSpaceSort();
         },
 
 
-        _initSort: function () {
+        /**
+         * _initRowSort
+         * 初始化列的Sortable
+         * @return
+         */
+        _initRowSort: function ($el) {
             var editor = this,
                 leftSpace = this.leftSpace,
                 cancel;
-            this.$workspace.find('.drop-area.horizon').sortable({
+            $el.sortable({
                 axis: 'x',
                 handle: 'header',
                 connectWith: '.drop-area.horizon',
@@ -426,6 +432,24 @@
                 opacity: OPACITY
             });
         },
+
+
+        /**
+         * _initWorkSpaceSort
+         * 初始化行编辑器的Sortable
+         * @private
+         * @return
+         */
+        _initWorkSpaceSort: function () {
+            this.$workspace.find('.horizon-container').sortable({
+                cursor: 'move',
+                //containment: 'parent',
+                placeholder: 'sortable-place-holder',
+                opacity: OPACITY
+            });
+        },
+
+
         /**
          * init Drag
          */
