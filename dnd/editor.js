@@ -8,6 +8,7 @@
         ROWNUM = 3,
         DROP_AREA_PREFIX = 'dnd-drop-area',
         EMPTY_FUN = function () {},
+        ROW_TPL = '<div class="drop-area horizon clearfix"></div>',
         OPACITY = 0.35;
 
 
@@ -18,8 +19,7 @@
         return '#' + idStr;
     }
 
-    var containerTpl = '<div class="horizon-container clearfix"></div>',
-        rowTpl= '<div class="drop-area horizon clearfix"></div>';
+    var containerTpl = '<div class="horizon-container clearfix"></div>';
 
 
     /**
@@ -54,6 +54,8 @@
             this.configViewCache = {};
             //priview的tpl
             this.previewTpl = options.previewTpl;
+            //rowTpl
+            this.rowTpl = options.rowTpl || ROW_TPL;
             //记录编辑器状态
             this.status = {};
             //缓存配置
@@ -270,18 +272,36 @@
          */
         addRow: function (cfg) {
             var leftSpace = this.leftSpace,
+                editor = this,
                 $container = this.$workspaceCont;
-            var $newRow = $(rowTpl);
+            var $newRow = $(this.rowTpl);
             var id = (cfg && cfg.id) || this.idGen(DROP_AREA_PREFIX);
             $newRow.attr('id', id);
             leftSpace[id] = this.colNum;
             this._initDrop($newRow);
             this._initRowSort($newRow);
+            $newRow.on('click', '.js-delete', function () {
+                editor.removeRow($newRow);
+                $newRow = null;
+            });
             $container.append($newRow);
             return $newRow;
         },
 
 
+        /**
+         * removeRow
+         *
+         * 移除一行
+         * @param $row
+         * @return
+         */
+        removeRow: function ($row) {
+            //删除剩余空间的记录
+            delete this.leftSpace[$row.attr('id')];
+            //移除Dom节点
+            $row.remove();
+        },
         /**
          * 将拖拽元件放入drop area中
          */
@@ -495,9 +515,11 @@
                 getCfgFromSortable = function ($sortable) {
                     var data = [],
                         sectionArr = $sortable.sortable('toArray');
-                    _.each(sectionArr, function (section) {
-                        var $section = $sortable.find(id(section)),
-                            sectionCfg = { id: section};
+                    _.each(sectionArr, function (sectionId) {
+                        //排除sectionId为空的异常情况
+                        if (!sectionId) {return;}
+                        var $section = $sortable.find(id(sectionId)),
+                            sectionCfg = { id: sectionId};
                         if ($section.hasClass('ui-sortable')) {
                             sectionCfg.tag = 'cont';
                             sectionCfg.children = getCfgFromSortable($section);
