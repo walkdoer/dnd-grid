@@ -6,6 +6,7 @@
     ------------------*/
     var COLNUM = 3,
         ROWNUM = 3,
+        DROP_AREA_PREFIX = 'dnd-drop-area',
         EMPTY_FUN = function () {},
         OPACITY = 0.35;
 
@@ -198,7 +199,7 @@
                         $div = $(containerTpl);
                         editor.$workspaceCont = $div;
                     } else {
-                        editor.addRow({id: config.id});
+                        $div = editor.addRow({id: config.id});
                     }
                     $parent = $div;
 
@@ -232,6 +233,7 @@
             } else {
                 //根据用户数据渲染编辑器
                 var $result = this._renderEditData(editData);
+                this.counter[DROP_AREA_PREFIX] = $result.find('.drop-area').length;
                 $workspace.append($result);
                 this._initDnd();
             }
@@ -269,12 +271,13 @@
         addRow: function (cfg) {
             var leftSpace = this.leftSpace,
                 $container = this.$workspaceCont;
-            var $item = $(rowTpl);
-            var id = (cfg && cfg.id) || this.idGen('dnd-drop-area');
-            $item.attr('id', id);
+            var $newRow = $(rowTpl);
+            var id = (cfg && cfg.id) || this.idGen(DROP_AREA_PREFIX);
+            $newRow.attr('id', id);
             leftSpace[id] = this.colNum;
-            this._initDrop($item);
-            $container.append($item);
+            this._initDrop($newRow);
+            $container.append($newRow);
+            return $newRow;
         },
 
 
