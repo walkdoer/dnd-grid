@@ -5,6 +5,7 @@
         Global Config
     ------------------*/
     var COLNUM = 3,
+        ROWNUM = 3,
         EMPTY_FUN = function () {},
         OPACITY = 0.35;
 
@@ -15,6 +16,9 @@
     function id(idStr) {
         return '#' + idStr;
     }
+
+    var containerTpl = '<div class="horizon-container clearfix"></div>',
+        rowTpl= '<div class="drop-area horizon clearfix"></div>';
 
 
     /**
@@ -36,11 +40,12 @@
         initialize: function (options) {
             this.$el.addClass(options.className);
             this.colNum = options.colNum || COLNUM;
+            this.rowNum = options.rowNum || ROWNUM;
             this.components = options.components;
             this.opacity = options.opacity || OPACITY;
             this.storage = options.storage;
-            this.leftSpace = {};
             this.comSpace = options.comSpace;
+            this.leftSpace = {};
             this.configData = options.cfg;
             this.widthPercent = (100 - this.comSpace * (this.colNum - 1)) / this.colNum;
             this.counter = {};
@@ -103,15 +108,27 @@
         _createButtons: function () {
             var editor = this,
                 $toolbar = $('<header class="dnd-toolbar">'),
-                btnTpl = '<button class="dnd-btn dnd-btn-<%= name %>"><%= name %></button>';
-            this.buttons = [{name: 'save'}];
+                btnTpl = '<button class="dnd-btn dnd-btn-<%= name %>"><%= text %></button>';
+            this.buttons = [{
+                //save button
+                name: 'save',
+                text: '保存',
+                handler: function () {
+                    editor.save();
+                }
+            }, {
+                //add Row button
+                name: 'addRow',
+                text: '添加行',
+                handler: function () {
+                    editor.addRow();
+                }
+            }];
             _.each(this.buttons, function (btn) {
                 $toolbar.append(_.template(btnTpl, btn));
+                $toolbar.on('click', '.dnd-btn-' + btn.name, btn.handler);
             });
 
-            $toolbar.on('click', '.dnd-btn-save', function () {
-                editor.save();
-            });
             return $toolbar;
         },
 
@@ -133,7 +150,7 @@
             var $comsContainer = $sidebar.find('.components'),
                 menuCfg = {
                     leafTpl: leafTpl,
-                    nodeTpl: '<li data-key="<%=statKey%>"><p class="sub-menu-toggle menu-text"><%= title %></p></li>'
+                    nodeTpl: '<li data-statkey="<%=statKey%>" data-template="<%=template%>"><p class="sub-menu-toggle menu-text"><%= title %></p></li>'
                 };
             if (typeof this.components === 'string') {
                 menuCfg.remote = true;
@@ -178,13 +195,10 @@
                         config.parentId = parent.id;
                         editor._dropCom($div, config);
                     } else if (config.root){
-                        $div = $('<div class="horizon-container clearfix">');
+                        $div = $(containerTpl);
+                        editor.$workspaceCont = $div;
                     } else {
-                        $div = $('<div class="drop-area horizon clearfix">');
-                        editor.leftSpace[config.id] = editor.colNum;
-                        if (config.id) {
-                            $div.attr('id', config.id);
-                        }
+                        editor.addRow({id: config.id});
                     }
                     $parent = $div;
 
@@ -225,20 +239,42 @@
 
 
 
+        /**
+         * 初始化工作台
+         *
+         * @private
+         * @param $workspace
+         * @return
+         */
         _initWorkSpace: function($workspace) {
-            var colNum = this.colNum,
-                leftSpace = this.leftSpace,
-                $container;
-            $container = $('<div class="horizon-container clearfix">');
-            for (var i = 0; i < colNum; i++) {
-                var $item = $('<div class="drop-area horizon clearfix"></div>');
-                var id = this.idGen('dnd-drop-area');
-                $item.attr('id', id);
-                leftSpace[id] = colNum;
-                $container.append($item);
+            var $container,
+                rowNum = this.rowNum;
+            //存储工作台主要区域到JS对象中
+            this.$workspaceCont = $container = $(containerTpl);
+            //添加Row
+            for (var i = 0; i < rowNum; i++) {
+                this.addRow();
             }
             $workspace.append($container);
             this._initDnd();
+        },
+
+
+        /**
+         * addRow
+         *
+         * 在编辑器增加一行，已提供放置组件的空间
+         * @return
+         */
+        addRow: function (cfg) {
+            var leftSpace = this.leftSpace,
+                $container = this.$workspaceCont;
+            var $item = $(rowTpl);
+            var id = (cfg && cfg.id) || this.idGen('dnd-drop-area');
+            $item.attr('id', id);
+            leftSpace[id] = this.colNum;
+            this._initDrop($item);
+            $container.append($item);
         },
 
 
@@ -296,11 +332,10 @@
          * 初始化拖拽
          * init drag and drop
          */
-        _initDrop: function () {
+        _initDrop: function ($el) {
             var editor = this,
                 leftSpace = this.leftSpace;
-            var dropAreaSelector = '.drop-area';
-            this.$workspace.find(dropAreaSelector).droppable({
+            $el.droppable({
                 hoverClass: 'ui-highlight',
                 accept: function (draggable) {
                     var sizeCfg = editor.getSizeCfg(draggable.find('.dnd-editor-com-preview').attr('data-size')),
@@ -333,7 +368,22 @@
                     $column.append($dragClone);
                 }
             });
-            var cancel;
+        },
+
+
+        /**
+         * 初始化drag and drop
+         */
+        _initDnd: function () {
+            this._initDrag();
+            this._initSort();
+        },
+
+
+        _initSort: function () {
+            var editor = this,
+                leftSpace = this.leftSpace,
+                cancel;
             this.$workspace.find('.drop-area.horizon').sortable({
                 axis: 'x',
                 handle: 'header',
@@ -373,17 +423,6 @@
                 opacity: OPACITY
             });
         },
-
-
-        /**
-         * 初始化drag and drop
-         */
-        _initDnd: function () {
-            this._initDrag();
-            this._initDrop();
-        },
-
-
         /**
          * init Drag
          */
