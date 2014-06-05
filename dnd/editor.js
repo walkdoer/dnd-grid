@@ -179,12 +179,12 @@
         /**
          * 渲染编辑数据
          */
-        _renderEditData: function (editData) {
+        _renderEditData: function ($workspace, editData) {
             var editor = this,
                 template = this.previewTpl,
                 renderFromEditData = function(config, parent) {
                     var $div,
-                        $parent;
+                        $parent = parent.$el;
                     if (config.tag === 'item') {
                         $div = $(_.template(template, config));
                         config.parentId = parent.id;
@@ -195,17 +195,19 @@
                     } else {
                         $div = editor.addRow({id: config.id});
                     }
-                    $parent = $div;
 
+                    $parent.append($div);
+                    if (config.tag === 'item') {
+                        editor.trigger('dropped', $div, config);
+                    }
                     var children = config.children;
                     if (children && children.length > 0) {
                         _.each(children, function (child) {
-                            $parent.append(renderFromEditData(child, {id: config.id}));
+                            renderFromEditData(child, {id: config.id, $el: $div});
                         });
                     }
-                    return $div;
                 };
-            return renderFromEditData(editData);
+            return renderFromEditData(editData, {$el: $workspace});
         },
 
 
@@ -226,8 +228,7 @@
                 this._initWorkSpace($workspace);
             } else {
                 //根据用户数据渲染编辑器
-                var $result = this._renderEditData(editData);
-                $workspace.append($result);
+                this._renderEditData($workspace, editData);
                 this._initDnd();
             }
         },
@@ -351,7 +352,6 @@
 
             });
             cfg.height = size.height;
-            this.trigger('dropped', $drag, cfg);
         },
 
 
@@ -393,6 +393,7 @@
                     };
                     editor._dropCom($dragClone, cfg, ui);
                     $column.append($dragClone);
+                    editor.trigger('dropped', $dragClone, cfg);
                 }
             });
         },
