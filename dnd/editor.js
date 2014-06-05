@@ -35,7 +35,7 @@
          * components: 编辑器提供的组件
          * opacity: 拖动时组件的透明度
          * panelSpace: 板块之间的距离
-         * cfg
+         * cfr
          * previewTpl 组件预览的模板，拖动是看到的Dom元素
          */
         initialize: function (options) {
@@ -44,8 +44,8 @@
             this.rowNum = options.rowNum || ROWNUM;
             this.components = options.components;
             this.opacity = options.opacity || OPACITY;
-            this.storage = options.storage;
             this.comSpace = options.comSpace;
+            this.editData = options.editData;
             this.leftSpace = {};
             this.configData = options.cfg;
             this.widthPercent = (100 - this.comSpace * (this.colNum - 1)) / this.colNum;
@@ -67,14 +67,7 @@
          * 渲染界面
          */
         render: function () {
-            var that = this;
             this._renderSideBar();
-            this.$el.append(this.$loadingView = $('<div class="dnd-editor-loading"></div>'));
-            this._setStatus('loading', true);
-            this.load(function (editData) {
-                that._setStatus('loading', false);
-                that._renderWorkSpace(editData);
-            });
             return this;
         },
 
@@ -221,7 +214,7 @@
          * @params editData {Object} 用户保存下来的编辑数据
          *
          */
-        _renderWorkSpace: function (editData) {
+        renderWorkSpace: function (editData) {
             //添加Workspace
             var $workspace;
             this.$workspace = $workspace = $('<div class="dnd-editor-workspace">');
@@ -502,20 +495,6 @@
 
 
         /**
-         * load
-         * 加载用户的配置
-         */
-        load: function (callback) {
-            var editData = JSON.parse(localStorage.getItem(this.storage));
-            var timer = setTimeout(function () {
-                callback(editData);
-                //todo remote load config
-                clearTimeout(timer);
-            }, 400);
-        },
-
-
-        /**
          * 获取编辑器的编辑数据
          * return {Object}
          */
@@ -560,7 +539,6 @@
          */
         save: function () {
             var data = this.getData();
-            localStorage.setItem(this.storage, JSON.stringify(data));
             this.trigger('save', data);
             return this;
         },
