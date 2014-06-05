@@ -117,7 +117,9 @@
                 name: 'addRow',
                 text: '添加行',
                 handler: function () {
-                    editor.addRow();
+                    var $newRow = editor.addRow();
+                    var offset = $newRow.offset();
+                    window.scrollTo(offset.left, offset.top);
                 }
             }];
             _.each(this.buttons, function (btn) {
