@@ -234,7 +234,6 @@
             } else {
                 //根据用户数据渲染编辑器
                 var $result = this._renderEditData(editData);
-                this.counter[DROP_AREA_PREFIX] = $result.find('.drop-area').length + 1;
                 $workspace.append($result);
                 this._initDnd();
             }
@@ -266,7 +265,7 @@
         /**
          * addRow
          *
-         * 在编辑器增加一行，已提供放置组件的空间
+         * 在编辑器增加一行，以提供放置组件的空间
          * @return
          */
         addRow: function (cfg) {
@@ -274,7 +273,19 @@
                 editor = this,
                 $container = this.$workspaceCont;
             var $newRow = $(this.rowTpl);
-            var id = (cfg && cfg.id) || this.idGen(DROP_AREA_PREFIX);
+            var id;
+
+            //如果用户传入Id，则不需要使用idGen生成id
+            if (cfg && (id = cfg.id)) {
+                //从形式为：dnd-drop-area-{num} 的Id字符串中取出num
+                var num = parseInt(id.substr(id.lastIndexOf('-') + 1), 10);
+                //将num的最大值存储到counter中，作为idGen的起始值
+                if (num > (this.counter[DROP_AREA_PREFIX] || 0)) {
+                    this.counter[DROP_AREA_PREFIX] = num;
+                }
+            } else {
+                id = this.idGen(DROP_AREA_PREFIX);
+            }
             $newRow.attr('id', id);
             leftSpace[id] = this.colNum;
             this._initDrop($newRow);
@@ -562,9 +573,9 @@
         idGen: function (prefix, spliter) {
             var counter = this.counter;
             if (!counter[prefix]) {
-                counter[prefix] = 1;
+                counter[prefix] = 0;
             }
-            return [prefix, counter[prefix]++].join(spliter || '-');
+            return [prefix, ++counter[prefix]].join(spliter || '-');
         },
 
 
