@@ -117,6 +117,13 @@
                     editor.save();
                 }
             }, {
+                name: 'close',
+                iconClass: 'icon-close',
+                text: '关闭',
+                handler: function() {
+                    editor.close();
+                }
+            }, {
                 //add Row button
                 name: 'addRow',
                 iconClass: 'icon-plus',
@@ -130,6 +137,7 @@
                         clearTimeout(timer);
                     }, 300);
                     window.scrollTo(offset.left, offset.top);
+                    editor.trigger('changed');
                 }
             }];
             _.each(this.buttons, function(btn) {
@@ -338,6 +346,7 @@
             this._initRowSort($newRow);
             $newRow.on('click', '.js-delete', function() {
                 editor.removeRow($newRow);
+                editor.trigger('changed');
                 $newRow = null;
             }).on('click', '.js-go-top', function () {
                 //置顶操作
@@ -346,7 +355,8 @@
                     $parent =$row.closest('.horizon-container');
                 $row.detach().prependTo($parent);
                 var offset = $row.offset();
-                window.scrollTo(offset.left, offset.top - 80);
+                window.scrollTo(offset.left, offset.top - 90);
+                editor.trigger('changed');
             }).on('click', '.js-go-bottom', function () {
                 //置底操作
                 var $button = $(this),
@@ -355,6 +365,7 @@
                 $row.detach().appendTo($parent);
                 var offset = $row.offset();
                 window.scrollTo(offset.left, offset.top);
+                editor.trigger('changed');
             });
             $container.append($newRow);
             return $newRow;
@@ -403,6 +414,7 @@
                     rowId = $row.attr('id');
                 $drag.remove();
                 editor.leftSpace[rowId] += widthSpace;
+                editor.trigger('changed');
             });
 
             //点击config按钮
@@ -462,7 +474,8 @@
                     };
                     editor._dropCom($dragClone, cfg, ui);
                     $column.append($dragClone);
-                    editor.trigger('dropped', $dragClone, cfg);
+                    editor.trigger('dropped', $dragClone, cfg)
+                          .trigger('changed');
                 }
             });
         },
@@ -519,6 +532,10 @@
                         leftSpace[this.parentNode.id] -= sizeCfg.width;
                         console.log('receive', leftSpace);
                     }
+                    editor.trigger('changed');
+                },
+                update: function () {
+                    editor.trigger('changed');
                 },
                 forceHelperSize: true,
                 forcePlaceholderSize: true,
@@ -531,7 +548,10 @@
                 //containment: 'parent',
                 handle: 'header',
                 placeholder: 'sortable-place-holder',
-                opacity: OPACITY
+                opacity: OPACITY,
+                update: function () {
+                    editor.trigger('changed');
+                }
             });
         },
 
@@ -619,7 +639,7 @@
                 };
             result.tag = 'cont';
             result.root = true;
-            result.children = getCfgFromSortable($('.editor .horizon-container'));
+            result.children = getCfgFromSortable(this.$('.horizon-container'));
             return result;
         },
 
@@ -699,6 +719,15 @@
                 this.itemWidth = this.$workspace.width() / this.colNum;
             }
             return this.itemWidth;
+        },
+
+
+        /**
+         * 关闭编辑器
+         */
+        close: function () {
+            this.$el.hide();
+            this.trigger('closed');
         }
     });
 
