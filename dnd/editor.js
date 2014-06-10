@@ -206,7 +206,7 @@
                         $parent = parent.$el;
                     if (config.tag === 'item') {
                         $div = $(_.template(template, config));
-                        config.parentId = parent.id;
+                        config.rowId = parent.id;
                         editor._dropCom($div, config);
                     } else if (config.root) {
                         $div = $(containerTpl);
@@ -217,9 +217,11 @@
                         });
                     }
 
-                    $parent.append($div);
                     if (config.tag === 'item') {
+                        $parent.find('.drop-area').append($div);
                         editor.trigger('dropped', $div, config);
+                    } else {
+                        $parent.append($div);
                     }
                     var children = config.children;
                     if (children && children.length > 0) {
@@ -340,18 +342,18 @@
             }).on('click', '.js-go-top', function () {
                 //置顶操作
                 var $button = $(this),
-                    $dragArea = $button.closest('.drop-area'),
-                    $parent =$dragArea.closest('.horizon-container');
-                $dragArea.detach().prependTo($parent);
-                var offset = $dragArea.offset();
+                    $row = $button.closest('.dnd-editor-workspace-row'),
+                    $parent =$row.closest('.horizon-container');
+                $row.detach().prependTo($parent);
+                var offset = $row.offset();
                 window.scrollTo(offset.left, offset.top - 80);
             }).on('click', '.js-go-bottom', function () {
                 //置底操作
                 var $button = $(this),
-                    $dragArea = $button.closest('.drop-area'),
-                    $parent =$dragArea.closest('.horizon-container');
-                $dragArea.detach().appendTo($parent);
-                var offset = $dragArea.offset();
+                    $row = $button.closest('.dnd-editor-workspace-row'),
+                    $parent =$row.closest('.horizon-container');
+                $row.detach().appendTo($parent);
+                var offset = $row.offset();
                 window.scrollTo(offset.left, offset.top);
             });
             $container.append($newRow);
@@ -380,8 +382,6 @@
             cfg = beforeDrop.call(this, $drag, cfg, ui);
             var sizeCfgStr = $drag.attr('data-size'),
                 editor = this,
-                parentId = cfg.parentId,
-                cacheId = parentId + cfg.id,
                 widthSpace = this.getSizeCfg(sizeCfgStr).width,
                 size = this.getSize(sizeCfgStr),
                 widthPercentage = this.getWidthPercentage(sizeCfgStr),
@@ -395,26 +395,29 @@
             $drag.addClass(cfg.className);
             $drag.attr('id', cfg.id)
                 .attr('data-width', totalWidth);
-            this.leftSpace[parentId] -= widthSpace;
+            this.leftSpace[cfg.rowId] -= widthSpace;
 
             //点击删除按钮
-            $drag.on('click', '.dnd-editor-btn-close', function() {
+            $drag.on('click', '.js-delete', function() {
+                var $row = $(this).closest('.dnd-editor-workspace-row'),
+                    rowId = $row.attr('id');
                 $drag.remove();
-                editor.leftSpace[parentId] += widthSpace;
+                editor.leftSpace[rowId] += widthSpace;
             });
 
             //点击config按钮
-            $drag.on('click', '.dnd-editor-btn-config', function() {
-                var cfgData = editor.configData,
-                    configViewCache = editor.configViewCache,
-                    configView;
-                $drag.find('.dnd-editor-com-preview-con').toggle();
-                if (!(configView = configViewCache[cacheId])) {
-                    configViewCache[cacheId] = configView = new DnDEditorConfig(cfgData);
-                    $drag.append(configView.$el);
-                } else {
-                    configView.$el.show();
-                }
+            $drag.on('click', '.js-config', function() {
+                //todo config
+                //var cfgData = editor.configData,
+                    //configViewCache = editor.configViewCache,
+                    //configView;
+                //$drag.find('.dnd-editor-com-preview-con').toggle();
+                //if (!(configView = configViewCache[cacheId])) {
+                    //configViewCache[cacheId] = configView = new DnDEditorConfig(cfgData);
+                    //$drag.append(configView.$el);
+                //} else {
+                    //configView.$el.show();
+                //}
 
             });
             cfg.height = size.height;
@@ -428,7 +431,7 @@
         _initDrop: function($el) {
             var editor = this,
                 leftSpace = this.leftSpace;
-            $el.droppable({
+            $el.find('.drop-area').droppable({
                 hoverClass: 'ui-highlight',
                 accept: function(draggable) {
                     var sizeCfg = editor.getSizeCfg(draggable.find('.dnd-editor-com-preview').attr('data-size')),
@@ -438,7 +441,7 @@
                     } else {
                         return false;
                     }
-                    return draggable.hasClass('com-drag') && leftSpace[this.id] >= needSpace;
+                    return draggable.hasClass('com-drag') && leftSpace[this.parentNode.id] >= needSpace;
                 },
                 drop: function(e, ui) {
                     var that = this,
@@ -455,7 +458,7 @@
                         className: type,
                         type: type,
                         id: editor.idGen(type),
-                        parentId: that.id
+                        rowId:that.parentNode.id
                     };
                     editor._dropCom($dragClone, cfg, ui);
                     $column.append($dragClone);
@@ -479,34 +482,42 @@
          * 初始化列的Sortable
          * @return
          */
-        _initRowSort: function($el) {
+        _initRowSort: function($row) {
             var editor = this,
-                leftSpace = this.leftSpace,
-                cancel;
+                $el = $row.find('.drop-area'),
+                leftSpace = this.leftSpace;
+            function setCancelStatus($el, cancel) {
+                $el.data('cancel', cancel);
+            }
             $el.sortable({
                 axis: 'x',
                 handle: 'header',
-                connectWith: '.drop-area.horizon',
+                connectWith: '.drop-area',
                 over: function(e, ui) {
                     var sizeCfg = editor.getSizeCfg(ui.helper.attr('data-size'));
-                    cancel = false;
-                    if (!sizeCfg || leftSpace[this.id] < sizeCfg.width) {
+                    setCancelStatus(ui.item, false);
+                    if (!sizeCfg || leftSpace[this.parentNode.id] < sizeCfg.width) {
+                        console.log('cancel');
+                        setCancelStatus(ui.item, true);
                         ui.sender.sortable('cancel');
-                        cancel = true;
                     }
                 },
                 remove: function(e, ui) {
-                    var item = ui.item;
+                    var item = ui.item,
+                        cancel = ui.item.data('cancel');
                     if (item && !cancel) {
                         var sizeCfg = editor.getSizeCfg(item.attr('data-size'));
-                        leftSpace[this.id] += sizeCfg.width;
+                        leftSpace[this.parentNode.id] += sizeCfg.width;
+                        console.log('remove', leftSpace);
                     }
                 },
                 receive: function(e, ui) {
-                    var item = ui.item;
+                    var item = ui.item,
+                        cancel = ui.item.data('cancel');
                     if (item && !cancel) {
                         var sizeCfg = editor.getSizeCfg(item.attr('data-size'));
-                        leftSpace[this.id] -= sizeCfg.width;
+                        leftSpace[this.parentNode.id] -= sizeCfg.width;
+                        console.log('receive', leftSpace);
                     }
                 },
                 forceHelperSize: true,
@@ -518,6 +529,7 @@
             this.$workspace.find('.horizon-container').sortable({
                 cursor: 'move',
                 //containment: 'parent',
+                handle: 'header',
                 placeholder: 'sortable-place-holder',
                 opacity: OPACITY
             });
@@ -585,12 +597,18 @@
                             sectionCfg.tag = 'cont';
                             sectionCfg.children = getCfgFromSortable($section);
                         } else {
-                            var type = $section.data('type');
-                            sectionCfg.tag = 'item';
-                            sectionCfg.className = type;
-                            sectionCfg.type = type;
-                            sectionCfg.statKey = $section.data('statKey');
-                            sectionCfg.title = $section.find('.title').html();
+                            var $dropContent = $section.find('.drop-area');
+                            if ($dropContent.length) {
+                                sectionCfg.tag = 'cont';
+                                sectionCfg.children = getCfgFromSortable($dropContent);
+                            } else {
+                                var type = $section.data('type');
+                                sectionCfg.tag = 'item';
+                                sectionCfg.className = type;
+                                sectionCfg.type = type;
+                                sectionCfg.statKey = $section.data('statKey');
+                                sectionCfg.title = $section.find('.title').html();
+                            }
                         }
                         sectionCfg.width = $section.data('width');
                         sectionCfg.size = $section.data('size');
