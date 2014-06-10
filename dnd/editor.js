@@ -39,6 +39,7 @@
          * previewTpl 组件预览的模板，拖动是看到的Dom元素
          */
         initialize: function(options) {
+            var that = this;
             if (options.$el) {
                 this.setElement(options.$el);
             }
@@ -63,6 +64,9 @@
             this.status = {};
             //缓存配置
             this.listeners = options.listeners || {};
+            this.on('changed', function () {
+                that.enableButton('save');
+            });
         },
 
 
@@ -107,11 +111,12 @@
         _createButtons: function() {
             var editor = this,
                 $toolbar = $('<header class="dnd-toolbar">'),
-                btnTpl = '<button class="dnd-btn dnd-btn-<%= name %>"><i class="dnd-btn-ico <%=iconClass%>"><%= text %></button>';
+                btnTpl = '<button class="dnd-btn dnd-btn-<%= name %> <%=(disabled ? "js-disabled dnd-btn-disabled" : "js-enabled")%>"><i class="dnd-btn-ico <%=iconClass%>"></i><%= text %></button>';
             this.buttons = [{
                 //save button
                 name: 'save',
                 iconClass: 'icon-checkmark',
+                disabled: true,
                 text: '保存',
                 handler: function() {
                     editor.save();
@@ -141,11 +146,21 @@
                 }
             }];
             _.each(this.buttons, function(btn) {
-                $toolbar.append(_.template(btnTpl, btn));
-                $toolbar.on('click', '.dnd-btn-' + btn.name, btn.handler);
+                $toolbar.append(_.template(btnTpl, $.extend({}, {disabled: false}, btn)));
+                $toolbar.on('click', '.js-enabled.dnd-btn-' + btn.name, btn.handler);
             });
 
             return $toolbar;
+        },
+
+
+        enableButton: function (name) {
+            this.$('.dnd-btn-' + name).removeClass('js-disabled dnd-btn-disabled').addClass('js-enabled');
+        },
+
+
+        disableButton: function (name) {
+            this.$('.dnd-btn-' + name).removeClass('js-enabled').addClass('dnd-btn-disabled js-disabled');
         },
 
 
