@@ -1,4 +1,4 @@
-(function (window, undefined) {
+(function(window, undefined) {
     'use strict';
 
     /**----------------
@@ -7,7 +7,7 @@
     var COLNUM = 3,
         ROWNUM = 3,
         DROP_AREA_PREFIX = 'dnd-drop-area',
-        EMPTY_FUN = function () {},
+        EMPTY_FUN = function() {},
         ROW_TPL = '<div class="drop-area horizon clearfix"></div>',
         OPACITY = 0.35;
 
@@ -38,7 +38,10 @@
          * cfr
          * previewTpl 组件预览的模板，拖动是看到的Dom元素
          */
-        initialize: function (options) {
+        initialize: function(options) {
+            if (options.$el) {
+                this.setElement(options.$el);
+            }
             this.$el.addClass(options.className);
             this.colNum = options.colNum || COLNUM;
             this.rowNum = options.rowNum || ROWNUM;
@@ -66,13 +69,13 @@
         /**
          * 渲染界面
          */
-        render: function () {
+        render: function() {
             this._renderSideBar();
             return this;
         },
 
 
-        _setStatus: function (type, value) {
+        _setStatus: function(type, value) {
             this.status[type] = value;
             this['$' + type + 'View'][value ? 'show' : 'hide'](value);
         },
@@ -82,7 +85,7 @@
          * 显示
          * 在这个函数中包括了计算宽度的步骤
          */
-        show: function () {
+        show: function() {
             this.$el.show();
             this.trigger('aftershow');
         },
@@ -92,7 +95,7 @@
         /**
          * 隐藏
          */
-        hide: function () {
+        hide: function() {
             this.$el.hide();
             this.trigger('hidden');
         },
@@ -101,28 +104,35 @@
         /**
          * 渲染工具栏
          */
-        _createButtons: function () {
+        _createButtons: function() {
             var editor = this,
                 $toolbar = $('<header class="dnd-toolbar">'),
-                btnTpl = '<button class="dnd-btn dnd-btn-<%= name %>"><%= text %></button>';
+                btnTpl = '<button class="dnd-btn dnd-btn-<%= name %>"><i class="dnd-btn-ico <%=iconClass%>"><%= text %></button>';
             this.buttons = [{
                 //save button
                 name: 'save',
+                iconClass: 'icon-checkmark',
                 text: '保存',
-                handler: function () {
+                handler: function() {
                     editor.save();
                 }
             }, {
                 //add Row button
                 name: 'addRow',
+                iconClass: 'icon-plus',
                 text: '添加行',
-                handler: function () {
+                handler: function() {
                     var $newRow = editor.addRow();
                     var offset = $newRow.offset();
+                    $newRow.addClass('wa-highlight');
+                    var timer = setTimeout(function () {
+                        $newRow.removeClass('wa-highlight');
+                        clearTimeout(timer);
+                    }, 300);
                     window.scrollTo(offset.left, offset.top);
                 }
             }];
-            _.each(this.buttons, function (btn) {
+            _.each(this.buttons, function(btn) {
                 $toolbar.append(_.template(btnTpl, btn));
                 $toolbar.on('click', '.dnd-btn-' + btn.name, btn.handler);
             });
@@ -134,22 +144,23 @@
         /**
          * 渲染侧边工具栏
          */
-        _renderSideBar: function () {
-            var sidebarTpl = '<div class="dnd-editor-sidebar components"></div>',
+        _renderSideBar: function() {
+            var sidebarTpl = '<div class="dnd-editor-sidebar components nano"><div class="menu-content nano-content"></div></div>',
                 that = this,
-                leafTpl = '<li>\
+                leafTpl = '<li class="dnd-menu-level-<%=level%>">\
                     <div class="com-drag" data-size="<%=size%>" data-type="<%=type%>">\
-                        <p class="menu-text"><%= title %></p>\
+                        <p class="menu-text"><i class="dnd-btn-ico icon-plus"></i><%= title %></p>\
                     </div>\
                 </li>',
                 $sidebar = $(_.template(sidebarTpl, {}));
 
             this.$el.append((this.$sidebar = $sidebar));
             var menuCfg = {
-                    $el: $sidebar,
-                    leafTpl: leafTpl,
-                    nodeTpl: '<li data-statkey="<%=statKey%>" data-template="<%=template%>"><p class="sub-menu-toggle menu-text"><%= title %></p></li>'
-                };
+                $el: $sidebar.find('.menu-content'),
+                leafTpl: leafTpl,
+                nodeTpl: '<li class="dnd-menu-level-<%=level%>" data-statkey="<%=(level === 2 ? statKey : "")%>" data-template="<%=(level === 2 ? template : "" )%>"><p class="menu-sub-menu-toggle menu-text"><i class="dnd-btn-ico dnd-editor-sidebar-ico <%=(level === 1 ? iconClass : "")%>"></i><%= title %></p><i class="dnd-menu-icon-drop icon-arrow-down9"></i><i class="dnd-menu-icon-collapse icon-arrow-up8"></i></li>'
+            };
+            //当this.components为字符串，则意味着提供菜单的URL地址，远程加载菜单
             if (typeof this.components === 'string') {
                 menuCfg.remote = true;
                 menuCfg.api = this.components;
@@ -161,10 +172,9 @@
                 };
             }
             var menu = new Menu(menuCfg).render();
-
-            menu.on('rendered', function () {
+            menu.on('rendered', function() {
                 var comPreviewTpl = that.previewTpl;
-                this.$('.com-drag').each(function (i, com) {
+                this.$('.com-drag').each(function(i, com) {
                     var $com = $(com);
                     $com.append($(_.template(comPreviewTpl, {
                         type: $com.data('type'),
@@ -174,6 +184,13 @@
                     })));
                 });
                 that._initDrag();
+                $sidebar.nanoScroller({
+                    preventPageScrolling: true
+                });
+            }).on('click', function () {
+                $sidebar.nanoScroller({
+                    preventPageScrolling: true
+                });
             });
         },
 
@@ -181,7 +198,7 @@
         /**
          * 渲染编辑数据
          */
-        _renderEditData: function ($workspace, editData) {
+        _renderEditData: function($workspace, editData) {
             var editor = this,
                 template = this.previewTpl,
                 renderFromEditData = function(config, parent) {
@@ -191,11 +208,13 @@
                         $div = $(_.template(template, config));
                         config.parentId = parent.id;
                         editor._dropCom($div, config);
-                    } else if (config.root){
+                    } else if (config.root) {
                         $div = $(containerTpl);
                         editor.$workspaceCont = $div;
                     } else {
-                        $div = editor.addRow({id: config.id});
+                        $div = editor.addRow({
+                            id: config.id
+                        });
                     }
 
                     $parent.append($div);
@@ -204,12 +223,17 @@
                     }
                     var children = config.children;
                     if (children && children.length > 0) {
-                        _.each(children, function (child) {
-                            renderFromEditData(child, {id: config.id, $el: $div});
+                        _.each(children, function(child) {
+                            renderFromEditData(child, {
+                                id: config.id,
+                                $el: $div
+                            });
                         });
                     }
                 };
-            return renderFromEditData(editData, {$el: $workspace});
+            return renderFromEditData(editData, {
+                $el: $workspace
+            });
         },
 
 
@@ -218,13 +242,17 @@
          * @params editData {Object} 用户保存下来的编辑数据
          *
          */
-        renderWorkSpace: function (editData) {
+        renderWorkSpace: function(editData) {
             //添加Workspace
             var $workspace;
             this.$workspace = $workspace = $('<div class="dnd-editor-workspace">');
             $workspace.append(this._createButtons());
             this.$el.append($workspace);
 
+            //计算并添加placeholder的css的高度
+            this.initPlaceHolder();
+
+            //如果有编辑数据则进行初始化
             if (!editData || !editData.children || !editData.children.length) {
                 //初始化 Horizon容器
                 this._initWorkSpace($workspace);
@@ -258,13 +286,33 @@
         },
 
 
+
+        initPlaceHolder: function() {
+            var itemWidth = this._getItemWidth();
+
+            var css = '.sortable-place-holder{height: ' + itemWidth+'px;}',
+                head = document.head || document.getElementsByTagName('head')[0],
+                style = document.createElement('style');
+
+            style.type = 'text/css';
+            if (style.styleSheet) {
+                style.styleSheet.cssText = css;
+            } else {
+                style.appendChild(document.createTextNode(css));
+            }
+
+            head.appendChild(style);
+        },
+
+
+
         /**
          * addRow
          *
          * 在编辑器增加一行，以提供放置组件的空间
          * @return
          */
-        addRow: function (cfg) {
+        addRow: function(cfg) {
             var leftSpace = this.leftSpace,
                 editor = this,
                 $container = this.$workspaceCont;
@@ -286,9 +334,25 @@
             leftSpace[id] = this.colNum;
             this._initDrop($newRow);
             this._initRowSort($newRow);
-            $newRow.on('click', '.js-delete', function () {
+            $newRow.on('click', '.js-delete', function() {
                 editor.removeRow($newRow);
                 $newRow = null;
+            }).on('click', '.js-go-top', function () {
+                //置顶操作
+                var $button = $(this),
+                    $dragArea = $button.closest('.drop-area'),
+                    $parent =$dragArea.closest('.horizon-container');
+                $dragArea.detach().prependTo($parent);
+                var offset = $dragArea.offset();
+                window.scrollTo(offset.left, offset.top - 80);
+            }).on('click', '.js-go-bottom', function () {
+                //置底操作
+                var $button = $(this),
+                    $dragArea = $button.closest('.drop-area'),
+                    $parent =$dragArea.closest('.horizon-container');
+                $dragArea.detach().appendTo($parent);
+                var offset = $dragArea.offset();
+                window.scrollTo(offset.left, offset.top);
             });
             $container.append($newRow);
             return $newRow;
@@ -302,7 +366,7 @@
          * @param $row
          * @return
          */
-        removeRow: function ($row) {
+        removeRow: function($row) {
             //删除剩余空间的记录
             delete this.leftSpace[$row.attr('id')];
             //移除Dom节点
@@ -311,7 +375,7 @@
         /**
          * 将拖拽元件放入drop area中
          */
-        _dropCom: function ($drag, cfg, ui) {
+        _dropCom: function($drag, cfg, ui) {
             var beforeDrop = this.listeners.beforeDrop || EMPTY_FUN;
             cfg = beforeDrop.call(this, $drag, cfg, ui);
             var sizeCfgStr = $drag.attr('data-size'),
@@ -330,17 +394,17 @@
             });
             $drag.addClass(cfg.className);
             $drag.attr('id', cfg.id)
-                 .attr('data-width', totalWidth);
+                .attr('data-width', totalWidth);
             this.leftSpace[parentId] -= widthSpace;
 
             //点击删除按钮
-            $drag.on('click', '.dnd-editor-btn-close', function () {
+            $drag.on('click', '.dnd-editor-btn-close', function() {
                 $drag.remove();
-                editor.leftSpace[parentId]+= widthSpace;
+                editor.leftSpace[parentId] += widthSpace;
             });
 
             //点击config按钮
-            $drag.on('click', '.dnd-editor-btn-config', function () {
+            $drag.on('click', '.dnd-editor-btn-config', function() {
                 var cfgData = editor.configData,
                     configViewCache = editor.configViewCache,
                     configView;
@@ -361,12 +425,12 @@
          * 初始化拖拽
          * init drag and drop
          */
-        _initDrop: function ($el) {
+        _initDrop: function($el) {
             var editor = this,
                 leftSpace = this.leftSpace;
             $el.droppable({
                 hoverClass: 'ui-highlight',
-                accept: function (draggable) {
+                accept: function(draggable) {
                     var sizeCfg = editor.getSizeCfg(draggable.find('.dnd-editor-com-preview').attr('data-size')),
                         needSpace;
                     if (sizeCfg) {
@@ -376,7 +440,7 @@
                     }
                     return draggable.hasClass('com-drag') && leftSpace[this.id] >= needSpace;
                 },
-                drop: function (e, ui) {
+                drop: function(e, ui) {
                     var that = this,
                         $dragClone = $(ui.draggable).find('.dnd-editor-com-preview').clone(),
                         $column = $(e.target);
@@ -404,7 +468,7 @@
         /**
          * 初始化drag and drop
          */
-        _initDnd: function () {
+        _initDnd: function() {
             this._initDrag();
             this._initWorkSpaceSort();
         },
@@ -415,7 +479,7 @@
          * 初始化列的Sortable
          * @return
          */
-        _initRowSort: function ($el) {
+        _initRowSort: function($el) {
             var editor = this,
                 leftSpace = this.leftSpace,
                 cancel;
@@ -423,7 +487,7 @@
                 axis: 'x',
                 handle: 'header',
                 connectWith: '.drop-area.horizon',
-                over : function (e, ui) {
+                over: function(e, ui) {
                     var sizeCfg = editor.getSizeCfg(ui.helper.attr('data-size'));
                     cancel = false;
                     if (!sizeCfg || leftSpace[this.id] < sizeCfg.width) {
@@ -431,14 +495,14 @@
                         cancel = true;
                     }
                 },
-                remove: function (e, ui) {
+                remove: function(e, ui) {
                     var item = ui.item;
                     if (item && !cancel) {
                         var sizeCfg = editor.getSizeCfg(item.attr('data-size'));
                         leftSpace[this.id] += sizeCfg.width;
                     }
                 },
-                receive: function (e, ui) {
+                receive: function(e, ui) {
                     var item = ui.item;
                     if (item && !cancel) {
                         var sizeCfg = editor.getSizeCfg(item.attr('data-size'));
@@ -466,7 +530,7 @@
          * @private
          * @return
          */
-        _initWorkSpaceSort: function () {
+        _initWorkSpaceSort: function() {
             this.$workspace.find('.horizon-container').sortable({
                 cursor: 'move',
                 //containment: 'parent',
@@ -479,13 +543,14 @@
         /**
          * init Drag
          */
-        _initDrag: function () {
+        _initDrag: function() {
             var editor = this,
                 beforeDrag = this.listeners.beforeDrag || EMPTY_FUN;
             this.$sidebar.find('.com-drag').draggable({
                 opacity: this.opacity,
                 cursor: 'move',
-                helper: function () {
+                appendTo: '#wa-page-body .editor',
+                helper: function() {
                     var $com = $(this),
                         $view = $com.find('.dnd-editor-com-preview').clone(),
                         size = editor.getSize($view.data('size'));
@@ -501,17 +566,21 @@
          * 获取编辑器的编辑数据
          * return {Object}
          */
-        getData: function () {
+        getData: function() {
             var result = {},
                 beforeSave = this.listeners.beforeSave || EMPTY_FUN,
-                getCfgFromSortable = function ($sortable) {
+                getCfgFromSortable = function($sortable) {
                     var data = [],
                         sectionArr = $sortable.sortable('toArray');
-                    _.each(sectionArr, function (sectionId) {
+                    _.each(sectionArr, function(sectionId) {
                         //排除sectionId为空的异常情况
-                        if (!sectionId) {return;}
+                        if (!sectionId) {
+                            return;
+                        }
                         var $section = $sortable.find(id(sectionId)),
-                            sectionCfg = { id: sectionId};
+                            sectionCfg = {
+                                id: sectionId
+                            };
                         if ($section.hasClass('ui-sortable')) {
                             sectionCfg.tag = 'cont';
                             sectionCfg.children = getCfgFromSortable($section);
@@ -540,7 +609,7 @@
         /**
          * save
          */
-        save: function () {
+        save: function() {
             var data = this.getData();
             this.trigger('save', data);
             return this;
@@ -551,7 +620,7 @@
          * id生成器
          * @return {String}
          */
-        idGen: function (prefix, spliter) {
+        idGen: function(prefix, spliter) {
             var counter = this.counter;
             if (!counter[prefix]) {
                 counter[prefix] = 0;
@@ -562,9 +631,9 @@
 
         /**
          * 获取尺寸的配置
-         * @return {Object} {width: 12, height: 13} 
+         * @return {Object} {width: 12, height: 13}
          */
-        getSizeCfg: function (cfgStr) {
+        getSizeCfg: function(cfgStr) {
             var cfg = null;
             if (cfgStr) {
                 var arr = cfgStr.split('*');
@@ -580,7 +649,7 @@
         /**
          * 获取尺寸
          */
-        getSize: function (cfgStr) {
+        getSize: function(cfgStr) {
             var sizeCfg = this.getSizeCfg(cfgStr),
                 itemWidth = this._getItemWidth(),
                 width,
@@ -598,7 +667,7 @@
         /**
          * 获取宽度的比值
          */
-        getWidthPercentage: function (cfgStr) {
+        getWidthPercentage: function(cfgStr) {
             var sizeCfg = this.getSizeCfg(cfgStr);
             return this.widthPercent * sizeCfg.width;
         },
@@ -607,7 +676,7 @@
         /**
          * 获取拖拽组件的宽度
          */
-        _getItemWidth: function () {
+        _getItemWidth: function() {
             if (this.itemWidth === undefined) {
                 this.itemWidth = this.$workspace.width() / this.colNum;
             }
