@@ -158,7 +158,7 @@
             var menuCfg = {
                 $el: $sidebar.find('.menu-content'),
                 leafTpl: leafTpl,
-                nodeTpl: '<li class="dnd-menu-level-<%=level%>" data-statkey="<%=(level === 2 ? statKey : "")%>" data-template="<%=(level === 2 ? template : "" )%>"><p class="menu-sub-menu-toggle menu-text"><i class="dnd-btn-ico dnd-editor-sidebar-ico <%=(level === 1 ? iconClass : "")%>"></i><%= title %></p><i class="dnd-menu-icon-drop icon-arrow-down9"></i><i class="dnd-menu-icon-collapse icon-arrow-up8"></i></li>'
+                nodeTpl: '<li class="dnd-menu-level-<%=level%>" data-statkey="<%=(level === 2 ? statKey : "")%>" data-template="<%=(level === 2 ? template : "" )%>"><div class="menu-sub-menu-toggle menu-text"><i class="dnd-btn-ico dnd-editor-sidebar-ico <%=(level === 1 ? iconClass : (level === 2 ? "icon-file-powerpoint" : ""))%>"></i><p class="menu-text-content"><%= title %></p></div><i class="dnd-menu-icon-drop icon-arrow-down9"></i><i class="dnd-menu-icon-collapse icon-arrow-up8"></i></li>'
             };
             //当this.components为字符串，则意味着提供菜单的URL地址，远程加载菜单
             if (typeof this.components === 'string') {
@@ -561,7 +561,7 @@
             this.$sidebar.find('.com-drag').draggable({
                 opacity: this.opacity,
                 cursor: 'move',
-                appendTo: '#wa-page-body .editor',
+                appendTo: '.' + this.$el.attr('class'),
                 helper: function() {
                     var $com = $(this),
                         $view = $com.find('.dnd-editor-com-preview').clone(),
