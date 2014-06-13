@@ -49,6 +49,7 @@
             this.components = options.components;
             this.opacity = options.opacity || OPACITY;
             this.comSpace = options.comSpace;
+            this.comHeight = options.comHeight;
             this.editData = options.editData;
             this.leftSpace = {};
             this.configData = options.cfg;
@@ -65,7 +66,7 @@
             //缓存配置
             this.listeners = options.listeners || {};
             this.on('changed', function () {
-                that.enableButton('save');
+                that.enableButton('save', 'dnd-btn-disabled');
             });
         },
 
@@ -118,8 +119,8 @@
                 iconClass: 'icon-checkmark',
                 disabled: true,
                 text: '保存',
-                handler: function() {
-                    editor.save();
+                handler: function(e) {
+                    editor.save($(e.currentTarget));
                 }
             }, {
                 name: 'close',
@@ -142,6 +143,7 @@
                         clearTimeout(timer);
                     }, 300);
                     window.scrollTo(offset.left, offset.top);
+                    editor._initRowSort($newRow);
                     editor.trigger('changed');
                 }
             }];
@@ -154,13 +156,13 @@
         },
 
 
-        enableButton: function (name) {
-            this.$('.dnd-btn-' + name).removeClass('js-disabled dnd-btn-disabled').addClass('js-enabled');
+        enableButton: function (btnName, className) {
+            this.$('.dnd-btn-' + btnName).removeClass(['js-disabled', className].join(' ')).addClass('js-enabled');
         },
 
 
-        disableButton: function (name) {
-            this.$('.dnd-btn-' + name).removeClass('js-enabled').addClass('dnd-btn-disabled js-disabled');
+        disableButton: function (btnName, className) {
+            this.$('.dnd-btn-' + btnName).removeClass('js-enabled').addClass(['js-disabled', className].join(' '));
         },
 
 
@@ -275,7 +277,7 @@
             this.$el.append($workspace);
 
             //计算并添加placeholder的css的高度
-            this.initPlaceHolder();
+            //this.initPlaceHolder();
 
             //如果有编辑数据则进行初始化
             if (!editData || !editData.children || !editData.children.length) {
@@ -356,9 +358,11 @@
                 id = this.idGen(DROP_AREA_PREFIX);
             }
             $newRow.attr('id', id);
+            //$newRow.height(this._getItemWidth() * 0.5);
             leftSpace[id] = this.colNum;
+
+            $container.append($newRow);
             this._initDrop($newRow);
-            this._initRowSort($newRow);
             $newRow.on('click', '.js-delete', function() {
                 editor.removeRow($newRow);
                 editor.trigger('changed');
@@ -382,7 +386,6 @@
                 window.scrollTo(offset.left, offset.top);
                 editor.trigger('changed');
             });
-            $container.append($newRow);
             return $newRow;
         },
 
@@ -412,10 +415,13 @@
                 size = this.getSize(sizeCfgStr),
                 widthPercentage = this.getWidthPercentage(sizeCfgStr),
                 //补充元素宽度
-                addUp = (widthSpace - 1) * this.comSpace,
+                addUp = (widthSpace - 1) * this.comSpace - 0.5,
                 totalWidth = widthPercentage + addUp + '%';
+
+
+            cfg.height = size.height;
             $drag.css({
-                height: size.height,
+                height: cfg.height,
                 width: totalWidth
             });
             $drag.addClass(cfg.className);
@@ -447,7 +453,6 @@
                 //}
 
             });
-            cfg.height = size.height;
         },
 
 
@@ -491,6 +496,8 @@
                     $column.append($dragClone);
                     editor.trigger('dropped', $dragClone, cfg)
                           .trigger('changed');
+                    $column.sortable('destroy');
+                    editor._initRowSort($column.parent('.dnd-editor-workspace-row'));
                 }
             });
         },
@@ -500,8 +507,12 @@
          * 初始化drag and drop
          */
         _initDnd: function() {
+            var that = this;
             this._initDrag();
             this._initWorkSpaceSort();
+            this.$('.dnd-editor-workspace-row').each(function (i, row) {
+                that._initRowSort($(row));
+            });
         },
 
 
@@ -521,11 +532,17 @@
                 axis: 'x',
                 handle: 'header',
                 connectWith: '.drop-area',
+                start: function(e, ui) {
+                    ui.placeholder.height(ui.item.height());
+                    $row.addClass('dragging');
+                },
+                stop: function () {
+                    $row.removeClass('dragging');
+                },
                 over: function(e, ui) {
                     var sizeCfg = editor.getSizeCfg(ui.helper.attr('data-size'));
                     setCancelStatus(ui.item, false);
                     if (!sizeCfg || leftSpace[this.parentNode.id] < sizeCfg.width) {
-                        console.log('cancel');
                         setCancelStatus(ui.item, true);
                         ui.sender.sortable('cancel');
                     }
@@ -536,7 +553,6 @@
                     if (item && !cancel) {
                         var sizeCfg = editor.getSizeCfg(item.attr('data-size'));
                         leftSpace[this.parentNode.id] += sizeCfg.width;
-                        console.log('remove', leftSpace);
                     }
                 },
                 receive: function(e, ui) {
@@ -545,11 +561,13 @@
                     if (item && !cancel) {
                         var sizeCfg = editor.getSizeCfg(item.attr('data-size'));
                         leftSpace[this.parentNode.id] -= sizeCfg.width;
-                        console.log('receive', leftSpace);
                     }
                     editor.trigger('changed');
                 },
-                update: function () {
+                update: function (e) {
+                    var $row = $(e.target);
+                    $row.sortable('destroy');
+                    editor._initRowSort($row.parent('.dnd-editor-workspace-row'));
                     editor.trigger('changed');
                 },
                 forceHelperSize: true,
@@ -557,16 +575,6 @@
                 cursor: 'move',
                 opacity: OPACITY,
                 placeholder: 'sortable-place-holder'
-            });
-            this.$workspace.find('.horizon-container').sortable({
-                cursor: 'move',
-                //containment: 'parent',
-                handle: 'header',
-                placeholder: 'sortable-place-holder',
-                opacity: OPACITY,
-                update: function () {
-                    editor.trigger('changed');
-                }
             });
         },
 
@@ -578,11 +586,18 @@
          * @return
          */
         _initWorkSpaceSort: function() {
+            var editor = this;
             this.$workspace.find('.horizon-container').sortable({
                 cursor: 'move',
                 //containment: 'parent',
                 placeholder: 'sortable-place-holder',
-                opacity: OPACITY
+                opacity: OPACITY,
+                start: function(e, ui) {
+                    ui.placeholder.height(ui.item.height());
+                },
+                update: function () {
+                    editor.trigger('changed');
+                }
             });
         },
 
@@ -662,9 +677,9 @@
         /**
          * save
          */
-        save: function() {
+        save: function($btn) {
             var data = this.getData();
-            this.trigger('save', data);
+            this.trigger('save', $btn, data);
             return this;
         },
 
@@ -712,7 +727,7 @@
             height = sizeCfg.height * itemWidth;
             return {
                 width: width,
-                height: height
+                height: this.comHeight || height
             };
         },
 
